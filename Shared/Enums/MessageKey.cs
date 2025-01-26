@@ -19,6 +19,7 @@ namespace Shared.Enums
         Error_InvalidEmail,
         Error_JWTNullOrEmpty,
         Error_InvalidCredentials,
+        Error_Unauthorized,
 
         /// Successes
         //Standard
@@ -28,5 +29,8 @@ namespace Shared.Enums
         //Authentication
         Success_Register,
         Success_Login,
+
+        //Scenes
+        Success_SceneCreation,
     }
 }

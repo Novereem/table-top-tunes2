@@ -13,5 +13,6 @@ namespace Shared.Interfaces.Services
     {
         Task<HttpServiceResult<RegisterResponseDTO>> RegisterUserAsync(RegisterDTO registerDTO);
         Task<HttpServiceResult<LoginResponseDTO>> LoginUserAsync(LoginDTO loginDTO);
+        Task<ServiceResult<User>> GetUserByIdAsync(Guid userId);
     }
 }

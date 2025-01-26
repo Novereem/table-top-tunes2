@@ -6,6 +6,7 @@ using System.Net;
 
 namespace TTT2.Controllers
 {
+    [ApiController]
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService _authService;

@@ -24,6 +24,7 @@ namespace Shared.Statics
         { MessageKey.Error_InvalidEmail, new MessageInfo("E005", "Invalid email", "Please provide a valid email.", MessageType.Error, HttpStatusCode.BadRequest) },
         { MessageKey.Error_JWTNullOrEmpty, new MessageInfo("E006", "JWT secret key is null.", "Something went wrong. Please try again.", MessageType.Error, HttpStatusCode.InternalServerError) },
         { MessageKey.Error_InvalidCredentials, new MessageInfo("E007", "Invalid credentials", "Wrong username and or password, please try again.", MessageType.Error, HttpStatusCode.Unauthorized) },
+        { MessageKey.Error_Unauthorized, new MessageInfo("E008", "Not authorized", "Something went wrong, please try to re-log back in.", MessageType.Error, HttpStatusCode.Unauthorized) },
         
         /// Success
         //Standard
@@ -32,7 +33,10 @@ namespace Shared.Statics
 
         //Authentication
         { MessageKey.Success_Login, new MessageInfo("S003", "Login successful", "Logged in successfully!", MessageType.Success, HttpStatusCode.OK) },
-        { MessageKey.Success_Register, new MessageInfo("S003", "Register successful", "Registered successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_Register, new MessageInfo("S004", "Register successful", "Registered successfully!", MessageType.Success, HttpStatusCode.OK) },
+
+        //Scenes
+        { MessageKey.Success_SceneCreation, new MessageInfo("S005", "Created scene succesfully", "Created the scene successfully!", MessageType.Success, HttpStatusCode.OK) },
     };
 
         public static MessageInfo GetMessage(MessageKey key)

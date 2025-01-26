@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Shared.Enums;
 using Shared.Interfaces.Data;
-using Shared.Interfaces.Services.Common;
+using Shared.Interfaces.Services.Common.Authentication;
 using Shared.Interfaces.Services.Helpers;
 using Shared.Models;
 using Shared.Models.Common;

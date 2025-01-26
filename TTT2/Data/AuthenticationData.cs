@@ -22,7 +22,7 @@ namespace TTT2.Data
 
         public async Task<User?> GetUserByUsernameAsync(string username)
         {
-            const string query = "SELECT Id, Username, Email, PasswordHash FROM Users WHERE Username = @Username;";
+            const string query = "SELECT Id, Username, Email, PasswordHash, CreatedAt FROM Users WHERE Username = @Username;";
             using var context = new DatabaseContext();
 
             await context.OpenAsync();
@@ -35,7 +35,8 @@ namespace TTT2.Data
                     Id = reader.GetGuid("Id"),
                     Username = reader.GetString("Username"),
                     Email = reader.GetString("Email"),
-                    PasswordHash = reader.GetString("PasswordHash")
+                    PasswordHash = reader.GetString("PasswordHash"),
+                    CreatedAt = reader.GetDateTime("CreatedAt")
                 };
             }
 
@@ -44,7 +45,7 @@ namespace TTT2.Data
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
-            const string query = "SELECT Id, Username, Email, PasswordHash FROM Users WHERE Email = @Email;";
+            const string query = "SELECT Id, Username, Email, PasswordHash, CreatedAt FROM Users WHERE Email = @Email;";
             using var context = new DatabaseContext();
 
             await context.OpenAsync();
@@ -57,7 +58,31 @@ namespace TTT2.Data
                     Id = reader.GetGuid("Id"),
                     Username = reader.GetString("Username"),
                     Email = reader.GetString("Email"),
-                    PasswordHash = reader.GetString("PasswordHash")
+                    PasswordHash = reader.GetString("PasswordHash"),
+                    CreatedAt = reader.GetDateTime("CreatedAt")
+                };
+            }
+
+            return null;
+        }
+
+        public async Task<User?> GetUserByIdAsync(Guid userId)
+        {
+            const string query = "SELECT Id, Username, Email, PasswordHash, CreatedAt FROM Users WHERE Id = @Id;";
+            using var context = new DatabaseContext();
+
+            await context.OpenAsync();
+            using var reader = await context.ExecuteQueryAsync(query, new MySqlParameter("@Id", userId.ToString()));
+
+            if (await reader.ReadAsync())
+            {
+                return new User
+                {
+                    Id = reader.GetGuid("Id"),
+                    Username = reader.GetString("Username"),
+                    Email = reader.GetString("Email"),
+                    PasswordHash = reader.GetString("PasswordHash"),
+                    CreatedAt = reader.GetDateTime("CreatedAt")
                 };
             }
 

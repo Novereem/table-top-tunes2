@@ -2,12 +2,13 @@
 using Shared.Enums;
 using Shared.Interfaces.Data;
 using Shared.Interfaces.Services;
-using Shared.Interfaces.Services.Common;
+using Shared.Interfaces.Services.Common.Authentication;
 using Shared.Interfaces.Services.Helpers;
 using Shared.Models;
 using Shared.Models.Common;
 using Shared.Models.DTOs.Authentication;
 using Shared.Models.Extensions;
+using System.Net;
 
 namespace TTT2.Services
 {
@@ -67,6 +68,26 @@ namespace TTT2.Services
             catch
             {
                 return HttpServiceResult<LoginResponseDTO>.FromServiceResult(ServiceResult<LoginResponseDTO>.Failure(MessageKey.Error_InternalServerError));
+            }
+        }
+
+        //Only for internal use, making it a service result not a http service result
+        public async Task<ServiceResult<User>> GetUserByIdAsync(Guid userId)
+        {
+            try
+            {
+                var user = await _authData.GetUserByIdAsync(userId);
+
+                if (user == null)
+                {
+                    return HttpServiceResult<User>.FromServiceResult(ServiceResult<User>.Failure(MessageKey.Error_Unauthorized));
+                }
+
+                return ServiceResult<User>.SuccessResult(user, MessageKey.Success_DataRetrieved);
+            }
+            catch
+            {
+                return HttpServiceResult<User>.FromServiceResult(ServiceResult<User>.Failure(MessageKey.Error_InternalServerError));
             }
         }
     }
