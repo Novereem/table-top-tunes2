@@ -21,5 +21,12 @@ namespace TTT2.Controllers
             var result = await _authService.RegisterUserAsync(registrationDTO);
             return this.ToActionResult(result);
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
+        {
+            var result = await _authService.LoginUserAsync(loginDTO);
+            return this.ToActionResult(result);
+        }
     }
 }

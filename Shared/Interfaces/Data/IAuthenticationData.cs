@@ -9,7 +9,8 @@ namespace Shared.Interfaces.Data
 {
     public interface IAuthenticationData
     {
-        public Task RegisterUserAsync(User user);
-        public Task<User?> GetUserByEmailAsync(string email);
+        Task RegisterUserAsync(User user);
+        Task<User?> GetUserByUsernameAsync(string username);
+        Task<User?> GetUserByEmailAsync(string email);
     }
 }

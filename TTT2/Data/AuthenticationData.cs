@@ -20,6 +20,28 @@ namespace TTT2.Data
                 new MySqlParameter("@PasswordHash", user.PasswordHash));
         }
 
+        public async Task<User?> GetUserByUsernameAsync(string username)
+        {
+            const string query = "SELECT Id, Username, Email, PasswordHash FROM Users WHERE Username = @Username;";
+            using var context = new DatabaseContext();
+
+            await context.OpenAsync();
+            using var reader = await context.ExecuteQueryAsync(query, new MySqlParameter("@Username", username));
+
+            if (await reader.ReadAsync())
+            {
+                return new User
+                {
+                    Id = reader.GetGuid("Id"),
+                    Username = reader.GetString("Username"),
+                    Email = reader.GetString("Email"),
+                    PasswordHash = reader.GetString("PasswordHash")
+                };
+            }
+
+            return null;
+        }
+
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             const string query = "SELECT Id, Username, Email, PasswordHash FROM Users WHERE Email = @Email;";
