@@ -1,4 +1,5 @@
-﻿using Shared.Models.Common;
+﻿using Shared.Models;
+using Shared.Models.Common;
 using Shared.Models.DTOs.Authentication;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace Shared.Interfaces.Services
 {
     public interface IAuthenticationService
     {
-        public Task<HttpServiceResult<RegisterResponseDTO>> RegisterUserAsync(RegisterDTO registerDTO);
+        Task<HttpServiceResult<RegisterResponseDTO>> RegisterUserAsync(RegisterDTO registerDTO);
+        Task<HttpServiceResult<LoginResponseDTO>> LoginUserAsync(LoginDTO loginDTO);
     }
 }

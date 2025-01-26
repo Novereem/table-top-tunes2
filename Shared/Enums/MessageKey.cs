@@ -8,11 +8,16 @@ namespace Shared.Enums
 {
     public enum MessageKey
     {
+        //Standard
+        Error_InternalServerError,
         Error_InvalidInput,
+
+        //Authentication
         Error_PasswordTooShort,
         Error_EmailTaken,
         Error_InvalidEmail,
-        Error_InternalServerError,
+        Error_JWTNullOrEmpty,
+        Error_InvalidCredentials,
 
         Success_OperationCompleted,
         Success_DataRetrieved
