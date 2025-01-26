@@ -12,6 +12,8 @@ using Shared.Models.DTOs.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using IAuthenticationService = Shared.Interfaces.Services.IAuthenticationService;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using Shared.Models.Extensions;
 
 namespace TTT2.Services
 {
@@ -63,6 +65,28 @@ namespace TTT2.Services
             catch
             {
                 return HttpServiceResult<SceneCreateResponseDTO>.FromServiceResult(ServiceResult<SceneCreateResponseDTO>.Failure(MessageKey.Error_InternalServerError));
+            }
+        }
+
+        public async Task<HttpServiceResult<List<SceneListItemDTO>>> GetScenesListByUserIdAsync(Guid sceneId, ClaimsPrincipal user)
+        {
+            var userIdResult = _userClaimsService.GetUserIdFromClaims(user);
+            if (userIdResult.IsFailure)
+            {
+                return HttpServiceResult<List<SceneListItemDTO>>.FromServiceResult(userIdResult.ToFailureResult<List<SceneListItemDTO>>());
+            }
+
+            try
+            {
+                var scenesResult = await _helper.RetrieveScenesByUserIdAsync(userIdResult.Data);
+                var sceneListItems = scenesResult.Data!.Select(scene => scene.ToSceneListItemDTO()).ToList();
+                return HttpServiceResult<List<SceneListItemDTO>>.FromServiceResult(
+                     ServiceResult<List<SceneListItemDTO>>.SuccessResult(sceneListItems, MessageKey.Success_DataRetrieved)
+                 );
+            }
+            catch
+            {
+                return HttpServiceResult<List<SceneListItemDTO>>.FromServiceResult(ServiceResult<List<SceneListItemDTO>>.Failure(MessageKey.Error_InternalServerError));
             }
         }
     }

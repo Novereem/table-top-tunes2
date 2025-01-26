@@ -10,5 +10,6 @@ namespace Shared.Interfaces.Data
     public interface ISceneData
     {
         Task<Scene?> CreateSceneAsync(Scene scene);
+        Task<List<Scene>> GetScenesByUserIdAsync(Guid userId);
     }
 }

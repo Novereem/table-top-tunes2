@@ -36,5 +36,28 @@ namespace TTT2.Data
 
             return null;
         }
+
+        public async Task<List<Scene>> GetScenesByUserIdAsync(Guid userId)
+        {
+            const string query = "SELECT Id, Name, UserId, CreatedAt FROM Scenes WHERE UserId = @UserId;";
+            using var context = new DatabaseContext();
+
+            await context.OpenAsync();
+            using var reader = await context.ExecuteQueryAsync(query, new MySqlParameter("@UserId", userId));
+
+            var scenes = new List<Scene>();
+            while (await reader.ReadAsync())
+            {
+                scenes.Add(new Scene
+                {
+                    Id = reader.GetGuid("Id"),
+                    Name = reader.GetString("Name"),
+                    UserId = reader.GetGuid("UserId"),
+                    CreatedAt = reader.GetDateTime("CreatedAt")
+                });
+            }
+
+            return scenes;
+        }
     }
 }

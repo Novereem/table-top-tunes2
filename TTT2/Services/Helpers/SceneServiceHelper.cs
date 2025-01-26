@@ -44,5 +44,17 @@ namespace TTT2.Services.Helpers
                 return ServiceResult<SceneCreateResponseDTO>.Failure(MessageKey.Error_InternalServerError);
             }
         }
+
+        public async Task<ServiceResult<List<Scene>>> RetrieveScenesByUserIdAsync(Guid userId)
+        {
+            var scenes = await _sceneData.GetScenesByUserIdAsync(userId);
+
+            if (scenes == null)
+            {
+                scenes = new List<Scene>();
+            }
+
+            return ServiceResult<List<Scene>>.SuccessResult(scenes);
+        }
     }
 }

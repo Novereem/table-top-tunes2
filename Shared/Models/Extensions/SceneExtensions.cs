@@ -25,5 +25,14 @@ namespace Shared.Models.Extensions
                 CreatedAt = scene.CreatedAt
             };
         }
+        public static SceneListItemDTO ToSceneListItemDTO(this Scene scene)
+        {
+            return new SceneListItemDTO
+            {
+                Id = scene.Id,
+                Name = scene.Name,
+                CreatedAt = scene.CreatedAt
+            };
+        }
     }
 }
