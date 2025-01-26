@@ -40,7 +40,7 @@ namespace TTT2.Services
             await _authData.RegisterUserAsync(newUser);
 
             return HttpServiceResult<RegisterResponseDTO>.FromServiceResult(
-                ServiceResult<RegisterResponseDTO>.SuccessResult(newUser.ToRegisterResponseDTO(), MessageKey.Success_OperationCompleted)
+                ServiceResult<RegisterResponseDTO>.SuccessResult(newUser.ToRegisterResponseDTO(), MessageKey.Success_Register)
             );
         }
 
@@ -61,7 +61,7 @@ namespace TTT2.Services
                     return HttpServiceResult<LoginResponseDTO>.FromServiceResult(validationResult.ToFailureResult<LoginResponseDTO>());
                 }
                 return HttpServiceResult<LoginResponseDTO>.FromServiceResult(
-                    ServiceResult<LoginResponseDTO>.SuccessResult(new LoginResponseDTO { Token = token.Data! }, MessageKey.Success_OperationCompleted)
+                    ServiceResult<LoginResponseDTO>.SuccessResult(new LoginResponseDTO { Token = token.Data! }, MessageKey.Success_Login)
                 );
             }
             catch

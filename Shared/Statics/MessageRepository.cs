@@ -13,16 +13,26 @@ namespace Shared.Statics
     {
         private static readonly Dictionary<MessageKey, MessageInfo> Messages = new()
     {
+        /// Error
+        //Standard
         { MessageKey.Error_InternalServerError, new MessageInfo("E001", "An unexpected error occurred.", "Something went wrong. Please try again.", MessageType.Error, HttpStatusCode.InternalServerError) },
         { MessageKey.Error_InvalidInput, new MessageInfo("E002", "Invalid input provided.", "Your input is invalid. Please check and try again.", MessageType.Error, HttpStatusCode.BadRequest) },
+        
+        //Authentication
         { MessageKey.Error_PasswordTooShort, new MessageInfo("E003", "Password too short when registering.", "Password is too short, the password has to be atleast 5 characters long.", MessageType.Error, HttpStatusCode.BadRequest) },
         { MessageKey.Error_EmailTaken, new MessageInfo("E004", "Email taken.", "This email has already been taken, please try again with a different email.", MessageType.Error, HttpStatusCode.BadRequest) },
         { MessageKey.Error_InvalidEmail, new MessageInfo("E005", "Invalid email", "Please provide a valid email.", MessageType.Error, HttpStatusCode.BadRequest) },
         { MessageKey.Error_JWTNullOrEmpty, new MessageInfo("E006", "JWT secret key is null.", "Something went wrong. Please try again.", MessageType.Error, HttpStatusCode.InternalServerError) },
         { MessageKey.Error_InvalidCredentials, new MessageInfo("E007", "Invalid credentials", "Wrong username and or password, please try again.", MessageType.Error, HttpStatusCode.Unauthorized) },
         
-        { MessageKey.Success_OperationCompleted, new MessageInfo("S001", "Operation completed successfully.", "Operation successful.", MessageType.Success, HttpStatusCode.OK) },
-        { MessageKey.Success_DataRetrieved, new MessageInfo("S002", "Data retrieved successfully.", "Data has been retrieved.", MessageType.Success, HttpStatusCode.OK) }
+        /// Success
+        //Standard
+        { MessageKey.Success_OperationCompleted, new MessageInfo("S001", "Operation completed successfully!", "Operation successful.", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_DataRetrieved, new MessageInfo("S002", "Data retrieved successfully!", "Data has been retrieved.", MessageType.Success, HttpStatusCode.OK) },
+
+        //Authentication
+        { MessageKey.Success_Login, new MessageInfo("S003", "Login successful", "Logged in successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_Register, new MessageInfo("S003", "Register successful", "Registered successfully!", MessageType.Success, HttpStatusCode.OK) },
     };
 
         public static MessageInfo GetMessage(MessageKey key)
