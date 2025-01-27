@@ -13,22 +13,14 @@ using System.Xml.Linq;
 
 namespace TTT2.Services.Helpers
 {
-    public class AuthenticationServiceHelper : IAuthenticationServiceHelper
+    public class AuthenticationServiceHelper(
+        IAuthenticationData authData,
+        IPasswordHashingService passwordHashingService)
+        : IAuthenticationServiceHelper
     {
-        private readonly IAuthenticationData _authData;
-        private readonly IPasswordHashingService _passwordHashingService;
-
-        public AuthenticationServiceHelper(
-            IAuthenticationData authData,
-            IPasswordHashingService passwordHashingService
-        )
-        {
-            _authData = authData;
-            _passwordHashingService = passwordHashingService;
-        }
         public async Task<ServiceResult<object>> ValidateRegistrationAsync(RegisterDTO registerDTO)
         {
-            if (await _authData.GetUserByEmailAsync(registerDTO.Email) != null)
+            if (await authData.GetUserByEmailAsync(registerDTO.Email) != null)
             {
                 return ServiceResult<object>.Failure(MessageKey.Error_EmailTaken);
             }
@@ -58,8 +50,8 @@ namespace TTT2.Services.Helpers
 
         public async Task<ServiceResult<User>> ValidateLoginAsync(LoginDTO loginDTO)
         {
-            var user = await _authData.GetUserByUsernameAsync(loginDTO.Username);
-            if (user == null || !_passwordHashingService.VerifyPassword(loginDTO.Password, user.PasswordHash))
+            var user = await authData.GetUserByUsernameAsync(loginDTO.Username);
+            if (user == null || !passwordHashingService.VerifyPassword(loginDTO.Password, user.PasswordHash))
             {
                 return ServiceResult<User>.Failure(MessageKey.Error_InvalidCredentials);
             }

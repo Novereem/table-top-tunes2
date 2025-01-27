@@ -22,7 +22,7 @@ namespace TTT2.Data
                 new MySqlParameter("@UserId", scene.UserId));
 
             // Retrieve the inserted scene
-            using var reader = await context.ExecuteQueryAsync(selectQuery, new MySqlParameter("@Id", scene.Id));
+            await using var reader = await context.ExecuteQueryAsync(selectQuery, new MySqlParameter("@Id", scene.Id));
             if (await reader.ReadAsync())
             {
                 return new Scene
@@ -43,7 +43,7 @@ namespace TTT2.Data
             using var context = new DatabaseContext();
 
             await context.OpenAsync();
-            using var reader = await context.ExecuteQueryAsync(query, new MySqlParameter("@UserId", userId));
+            await using var reader = await context.ExecuteQueryAsync(query, new MySqlParameter("@UserId", userId));
 
             var scenes = new List<Scene>();
             while (await reader.ReadAsync())

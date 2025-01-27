@@ -32,5 +32,8 @@ namespace Shared.Enums
 
         //Scenes
         Success_SceneCreation,
+        
+        //Audio
+        Success_AudioCreation,
     }
 }

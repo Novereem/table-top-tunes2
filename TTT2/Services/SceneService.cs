@@ -17,30 +17,21 @@ using Shared.Models.Extensions;
 
 namespace TTT2.Services
 {
-    public class SceneService : ISceneService
+    public class SceneService(
+        ISceneServiceHelper helper,
+        IUserClaimsService userClaimsService,
+        IAuthenticationService authenticationService)
+        : ISceneService
     {
-        private readonly ISceneServiceHelper _helper;
-        private readonly ISceneData _sceneData;
-        private readonly IUserClaimsService _userClaimsService;
-        private readonly IAuthenticationService _authenticationService;
-
-        public SceneService(ISceneServiceHelper helper, ISceneData sceneData, IUserClaimsService userClaimsService, IAuthenticationService authenticationService)
-        {
-            _helper = helper;
-            _sceneData = sceneData;
-            _userClaimsService = userClaimsService;
-            _authenticationService = authenticationService;
-        }
-
         public async Task<HttpServiceResult<SceneCreateResponseDTO>> CreateSceneAsync(SceneCreateDTO sceneDTO, ClaimsPrincipal user)
         {
-            var userIdResult = _userClaimsService.GetUserIdFromClaims(user);
+            var userIdResult = userClaimsService.GetUserIdFromClaims(user);
             if (userIdResult.IsFailure)
             {
                 return HttpServiceResult<SceneCreateResponseDTO>.FromServiceResult(userIdResult.ToFailureResult<SceneCreateResponseDTO>());
             }
 
-            var validationResult = _helper.ValidateSceneCreate(sceneDTO);
+            var validationResult = helper.ValidateSceneCreate(sceneDTO);
             if (validationResult.IsFailure)
             {
                 return HttpServiceResult<SceneCreateResponseDTO>.FromServiceResult(validationResult.ToFailureResult<SceneCreateResponseDTO>());
@@ -48,12 +39,12 @@ namespace TTT2.Services
 
             try
             {
-                var userResult = await _authenticationService.GetUserByIdAsync(userIdResult.Data);
+                var userResult = await authenticationService.GetUserByIdAsync(userIdResult.Data);
                 if (userResult.IsFailure || userResult.Data == null)
                 {
                     return HttpServiceResult<SceneCreateResponseDTO>.FromServiceResult(validationResult.ToFailureResult<SceneCreateResponseDTO>());
                 }
-                var createdSceneResult = await _helper.CreateSceneAsync(sceneDTO, userResult.Data);
+                var createdSceneResult = await helper.CreateSceneAsync(sceneDTO, userResult.Data);
                 if (createdSceneResult.IsFailure)
                 {
                     return HttpServiceResult<SceneCreateResponseDTO>.FromServiceResult(validationResult.ToFailureResult<SceneCreateResponseDTO>());
@@ -70,7 +61,7 @@ namespace TTT2.Services
 
         public async Task<HttpServiceResult<List<SceneListItemDTO>>> GetScenesListByUserIdAsync(Guid sceneId, ClaimsPrincipal user)
         {
-            var userIdResult = _userClaimsService.GetUserIdFromClaims(user);
+            var userIdResult = userClaimsService.GetUserIdFromClaims(user);
             if (userIdResult.IsFailure)
             {
                 return HttpServiceResult<List<SceneListItemDTO>>.FromServiceResult(userIdResult.ToFailureResult<List<SceneListItemDTO>>());
@@ -78,7 +69,7 @@ namespace TTT2.Services
 
             try
             {
-                var scenesResult = await _helper.RetrieveScenesByUserIdAsync(userIdResult.Data);
+                var scenesResult = await helper.RetrieveScenesByUserIdAsync(userIdResult.Data);
                 var sceneListItems = scenesResult.Data!.Select(scene => scene.ToSceneListItemDTO()).ToList();
                 return HttpServiceResult<List<SceneListItemDTO>>.FromServiceResult(
                      ServiceResult<List<SceneListItemDTO>>.SuccessResult(sceneListItems, MessageKey.Success_DataRetrieved)

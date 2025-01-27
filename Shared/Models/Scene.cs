@@ -15,6 +15,6 @@ namespace Shared.Models
 
         // Navigation properties
         public User User { get; set; } = null!;
-        public List<SceneAudioFile> SceneAudioFiles { get; set; } = new List<SceneAudioFile>();
+        public List<SceneAudioFile> SceneAudioFiles { get; set; } = [];
     }
 }

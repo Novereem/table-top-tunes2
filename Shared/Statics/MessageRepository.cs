@@ -37,6 +37,9 @@ namespace Shared.Statics
 
         //Scenes
         { MessageKey.Success_SceneCreation, new MessageInfo("S005", "Created scene succesfully", "Created the scene successfully!", MessageType.Success, HttpStatusCode.OK) },
+        
+        //Audio
+        { MessageKey.Success_AudioCreation, new MessageInfo("S006", "Created audio succesfully", "Created the audio successfully!", MessageType.Success, HttpStatusCode.OK) },
     };
 
         public static MessageInfo GetMessage(MessageKey key)

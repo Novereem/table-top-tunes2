@@ -8,13 +8,8 @@ using Shared.Models.Extensions;
 
 namespace TTT2.Services.Helpers
 {
-    public class SceneServiceHelper : ISceneServiceHelper
+    public class SceneServiceHelper(ISceneData sceneData) : ISceneServiceHelper
     {
-        private readonly ISceneData _sceneData;
-
-        public SceneServiceHelper(ISceneData sceneData) {
-            _sceneData = sceneData;
-        }
         public ServiceResult<object> ValidateSceneCreate(SceneCreateDTO sceneDTO)
         {
             if (string.IsNullOrWhiteSpace(sceneDTO.Name))
@@ -32,7 +27,7 @@ namespace TTT2.Services.Helpers
                 var newScene = sceneDTO.ToSceneFromCreateDTO();
                 newScene.UserId = user.Id;
 
-                var createdScene = await _sceneData.CreateSceneAsync(newScene);
+                var createdScene = await sceneData.CreateSceneAsync(newScene);
                 if (createdScene == null)
                 {
                     return ServiceResult<SceneCreateResponseDTO>.Failure(MessageKey.Error_InternalServerError);
@@ -47,12 +42,7 @@ namespace TTT2.Services.Helpers
 
         public async Task<ServiceResult<List<Scene>>> RetrieveScenesByUserIdAsync(Guid userId)
         {
-            var scenes = await _sceneData.GetScenesByUserIdAsync(userId);
-
-            if (scenes == null)
-            {
-                scenes = new List<Scene>();
-            }
+            var scenes = await sceneData.GetScenesByUserIdAsync(userId);
 
             return ServiceResult<List<Scene>>.SuccessResult(scenes);
         }

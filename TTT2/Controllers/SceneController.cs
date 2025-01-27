@@ -8,26 +8,19 @@ namespace TTT2.Controllers
 {
     [Authorize]
     [ApiController]
-    public class SceneController : ControllerBase
+    public class SceneController(ISceneService sceneService) : ControllerBase
     {
-        private readonly ISceneService _sceneService;
-
-        public SceneController(ISceneService sceneService)
-        {
-            _sceneService = sceneService;
-        }
-
         [HttpPost("create-scene")]
-        public async Task<IActionResult> CreateScene([FromBody] SceneCreateDTO sceneDTO)
+        public async Task<IActionResult> CreateScene([FromBody] SceneCreateDTO sceneCreateDTO)
         {
-            var result = await _sceneService.CreateSceneAsync(sceneDTO, User);
+            var result = await sceneService.CreateSceneAsync(sceneCreateDTO, User);
             return this.ToActionResult(result);
         }
 
         [HttpGet("get-scenes")]
         public async Task<IActionResult> GetScenesList(Guid id)
         {
-            var result = await _sceneService.GetScenesListByUserIdAsync(id, User);
+            var result = await sceneService.GetScenesListByUserIdAsync(id, User);
             return this.ToActionResult(result);
         }
     }
