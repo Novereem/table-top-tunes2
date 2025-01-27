@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Shared.Interfaces.Services.Common;
+using Shared.Interfaces.Services.Common.Authentication;
 using Shared.Models.DTOs.Authentication;
 
 namespace Shared.Models.Extensions

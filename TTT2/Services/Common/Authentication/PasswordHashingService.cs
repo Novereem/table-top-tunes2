@@ -1,7 +1,7 @@
 ﻿using BCrypt.Net;
-using Shared.Interfaces.Services.Common;
+using Shared.Interfaces.Services.Common.Authentication;
 
-namespace TTT2.Services.Common
+namespace TTT2.Services.Common.Authentication
 {
     public class PasswordHashingService : IPasswordHashingService
     {
