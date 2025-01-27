@@ -23,5 +23,15 @@ namespace Shared.Models.Extensions
                 AudioType = sceneAudioFile.AudioType
             };
         }
+        
+        public static SceneAudioFile ToSceneAudioFileFromRemoveDTO(this SceneAudioRemoveDTO sceneAudioRemoveDTO)
+        {
+            return new SceneAudioFile
+            {
+                SceneId = sceneAudioRemoveDTO.SceneId,
+                AudioFileId = sceneAudioRemoveDTO.AudioFileId,
+                AudioType = sceneAudioRemoveDTO.AudioType
+            };
+        }
     }
 }

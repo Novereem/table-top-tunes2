@@ -59,7 +59,7 @@ namespace TTT2.Services
             }
         }
 
-        public async Task<HttpServiceResult<List<SceneListItemDTO>>> GetScenesListByUserIdAsync(Guid sceneId, ClaimsPrincipal user)
+        public async Task<HttpServiceResult<List<SceneListItemDTO>>> GetScenesListByUserIdAsync(ClaimsPrincipal user)
         {
             var userIdResult = userClaimsService.GetUserIdFromClaims(user);
             if (userIdResult.IsFailure)

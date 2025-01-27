@@ -12,9 +12,5 @@ namespace Shared.Models
         public Guid SceneId { get; set; }
         public Guid AudioFileId { get; set; }
         public AudioType AudioType { get; set; }
-        
-        // Navigation properties
-        public Scene Scene { get; set; } = null!;
-        public AudioFile AudioFile { get; set; } = null!;
     }
 }

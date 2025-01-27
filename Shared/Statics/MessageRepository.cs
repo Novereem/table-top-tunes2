@@ -26,6 +26,9 @@ namespace Shared.Statics
         { MessageKey.Error_InvalidCredentials, new MessageInfo("E007", "Invalid credentials", "Wrong username and or password, please try again.", MessageType.Error, HttpStatusCode.Unauthorized) },
         { MessageKey.Error_Unauthorized, new MessageInfo("E008", "Not authorized", "Something went wrong, please try to re-log back in.", MessageType.Error, HttpStatusCode.Unauthorized) },
         
+        //SceneAudio
+        { MessageKey.Error_SceneAudioAlreadyAdded, new MessageInfo("E009", "Audio already added to scene", "This audio has already been added to the scene.", MessageType.Error, HttpStatusCode.Conflict) },
+        
         /// Success
         //Standard
         { MessageKey.Success_OperationCompleted, new MessageInfo("S001", "Operation completed successfully!", "Operation successful.", MessageType.Success, HttpStatusCode.OK) },
@@ -43,6 +46,8 @@ namespace Shared.Statics
         
         //SceneAudio
         { MessageKey.Success_SceneAudioAssignment, new MessageInfo("S007", "Audio assigned to scene succesfully", "Audio assigned to scene successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_SceneAudioRemoval, new MessageInfo("S008", "Removed audio from scene succesfully", "Removed audio from scene successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_SceneAudioFilesRetrieval, new MessageInfo("S009", "Retrieved audio files from scene succesfully", "Retrieved audio files from scene successfully!", MessageType.Success, HttpStatusCode.OK) },
     };
 
         public static MessageInfo GetMessage(MessageKey key)

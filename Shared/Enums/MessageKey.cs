@@ -21,6 +21,9 @@ namespace Shared.Enums
         Error_InvalidCredentials,
         Error_Unauthorized,
 
+        //SceneAudio
+        Error_SceneAudioAlreadyAdded,
+        
         /// Successes
         //Standard
         Success_OperationCompleted,
@@ -37,6 +40,8 @@ namespace Shared.Enums
         Success_AudioCreation,
         
         //SceneAudio
-        Success_SceneAudioAssignment
+        Success_SceneAudioAssignment,
+        Success_SceneAudioRemoval,
+        Success_SceneAudioFilesRetrieval,
     }
 }

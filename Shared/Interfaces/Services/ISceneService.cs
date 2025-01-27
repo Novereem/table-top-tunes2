@@ -12,7 +12,7 @@ namespace Shared.Interfaces.Services
     public interface ISceneService
     {
         Task<HttpServiceResult<SceneCreateResponseDTO>> CreateSceneAsync(SceneCreateDTO sceneDTO, ClaimsPrincipal user);
-        Task<HttpServiceResult<List<SceneListItemDTO>>> GetScenesListByUserIdAsync(Guid sceneId, ClaimsPrincipal user);
+        Task<HttpServiceResult<List<SceneListItemDTO>>> GetScenesListByUserIdAsync(ClaimsPrincipal user);
         Task<ServiceResult<bool>> ValidateSceneWithUserAsync(Guid sceneId, Guid userId);
     }
 }
