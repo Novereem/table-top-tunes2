@@ -40,6 +40,9 @@ namespace Shared.Statics
         
         //Audio
         { MessageKey.Success_AudioCreation, new MessageInfo("S006", "Created audio succesfully", "Created the audio successfully!", MessageType.Success, HttpStatusCode.OK) },
+        
+        //SceneAudio
+        { MessageKey.Success_SceneAudioAssignment, new MessageInfo("S007", "Audio assigned to scene succesfully", "Audio assigned to scene successfully!", MessageType.Success, HttpStatusCode.OK) },
     };
 
         public static MessageInfo GetMessage(MessageKey key)

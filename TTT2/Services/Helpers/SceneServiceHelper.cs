@@ -46,5 +46,23 @@ namespace TTT2.Services.Helpers
 
             return ServiceResult<List<Scene>>.SuccessResult(scenes);
         }
+
+        public async Task<ServiceResult<bool>> ValidateSceneWithUserAsync(Guid sceneId, Guid userId)
+        {
+            try
+            {
+                var isValid = await sceneData.SceneBelongsToUserAsync(sceneId, userId);
+                if (!isValid)
+                {
+                    return ServiceResult<bool>.Failure(MessageKey.Error_Unauthorized);
+                }
+
+                return ServiceResult<bool>.SuccessResult(true);
+            }
+            catch
+            {
+                return ServiceResult<bool>.Failure(MessageKey.Error_InternalServerError);
+            }
+        }
     }
 }

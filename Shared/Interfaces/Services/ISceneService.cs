@@ -13,5 +13,6 @@ namespace Shared.Interfaces.Services
     {
         Task<HttpServiceResult<SceneCreateResponseDTO>> CreateSceneAsync(SceneCreateDTO sceneDTO, ClaimsPrincipal user);
         Task<HttpServiceResult<List<SceneListItemDTO>>> GetScenesListByUserIdAsync(Guid sceneId, ClaimsPrincipal user);
+        Task<ServiceResult<bool>> ValidateSceneWithUserAsync(Guid sceneId, Guid userId);
     }
 }

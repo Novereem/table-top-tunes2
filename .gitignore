@@ -367,3 +367,7 @@ FodyWeavers.xsd
 
 # Logs
 logs/
+
+//idea
+.idea/
+TTT2/.idea

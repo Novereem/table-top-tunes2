@@ -1,6 +1,7 @@
-﻿namespace Shared.Models.DTOs.AudioFiles;
-
-public class AudioFileCreateDTO
+﻿namespace Shared.Models.DTOs.AudioFiles
 {
-    public required string Name { get; set; }
+    public class AudioFileCreateDTO
+    {
+        public required string Name { get; set; }
+    }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Shared.Enums;
+﻿using Shared.Enums;
 using Shared.Interfaces.Data;
 using Shared.Interfaces.Services;
 using Shared.Interfaces.Services.Common.Authentication;
@@ -8,37 +7,25 @@ using Shared.Models;
 using Shared.Models.Common;
 using Shared.Models.DTOs.Authentication;
 using Shared.Models.Extensions;
-using System.Net;
 
 namespace TTT2.Services
 {
-    public class AuthenticationService : IAuthenticationService
+    public class AuthenticationService(
+        IAuthenticationServiceHelper helper,
+        IPasswordHashingService passwordHashingService,
+        IAuthenticationData authData)
+        : IAuthenticationService
     {
-        private readonly IAuthenticationServiceHelper _helper;
-        private readonly IPasswordHashingService _passwordHashingService;
-        private readonly IAuthenticationData _authData;
-
-        public AuthenticationService(
-            IAuthenticationServiceHelper helper,
-            IPasswordHashingService passwordHashingService,
-            IAuthenticationData authData
-        )
-        {
-            _helper = helper;
-            _passwordHashingService = passwordHashingService;
-            _authData = authData;
-        }
-
         public async Task<HttpServiceResult<RegisterResponseDTO>> RegisterUserAsync(RegisterDTO registerDTO)
         {
-            var validationResult = await _helper.ValidateRegistrationAsync(registerDTO);
+            var validationResult = await helper.ValidateRegistrationAsync(registerDTO);
             if (validationResult.IsFailure)
             {
                 return HttpServiceResult<RegisterResponseDTO>.FromServiceResult(validationResult.ToFailureResult<RegisterResponseDTO>());
             }
 
-            var newUser = registerDTO.ToUserFromRegisterDTO(_passwordHashingService);
-            await _authData.RegisterUserAsync(newUser);
+            var newUser = registerDTO.ToUserFromRegisterDTO(passwordHashingService);
+            await authData.RegisterUserAsync(newUser);
 
             return HttpServiceResult<RegisterResponseDTO>.FromServiceResult(
                 ServiceResult<RegisterResponseDTO>.SuccessResult(newUser.ToRegisterResponseDTO(), MessageKey.Success_Register)
@@ -47,7 +34,7 @@ namespace TTT2.Services
 
         public async Task<HttpServiceResult<LoginResponseDTO>> LoginUserAsync(LoginDTO loginDTO)
         {
-            var validationResult = await _helper.ValidateLoginAsync(loginDTO);
+            var validationResult = await helper.ValidateLoginAsync(loginDTO);
             if (validationResult.IsFailure)
             {
                 return HttpServiceResult<LoginResponseDTO>.FromServiceResult(validationResult.ToFailureResult<LoginResponseDTO>());
@@ -56,7 +43,7 @@ namespace TTT2.Services
             try
             {
                 var user = validationResult.Data;
-                var token = _helper.GenerateJwtToken(user!.Id, user.Username);
+                var token = helper.GenerateJwtToken(user!.Id, user.Username);
                 if (token.IsFailure)
                 {
                     return HttpServiceResult<LoginResponseDTO>.FromServiceResult(validationResult.ToFailureResult<LoginResponseDTO>());
@@ -70,25 +57,10 @@ namespace TTT2.Services
                 return HttpServiceResult<LoginResponseDTO>.FromServiceResult(ServiceResult<LoginResponseDTO>.Failure(MessageKey.Error_InternalServerError));
             }
         }
-
-        //Only for internal use, making it a service result not a http service result
+        
         public async Task<ServiceResult<User>> GetUserByIdAsync(Guid userId)
         {
-            try
-            {
-                var user = await _authData.GetUserByIdAsync(userId);
-
-                if (user == null)
-                {
-                    return HttpServiceResult<User>.FromServiceResult(ServiceResult<User>.Failure(MessageKey.Error_Unauthorized));
-                }
-
-                return ServiceResult<User>.SuccessResult(user, MessageKey.Success_DataRetrieved);
-            }
-            catch
-            {
-                return HttpServiceResult<User>.FromServiceResult(ServiceResult<User>.Failure(MessageKey.Error_InternalServerError));
-            }
+            return await helper.GetUserByIdAsync(userId);
         }
     }
 }

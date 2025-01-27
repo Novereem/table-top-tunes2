@@ -34,4 +34,22 @@ public class AudioServiceHelper(IAudioData audioData) : IAudioServiceHelper
             return ServiceResult<AudioFileCreateResponseDTO>.Failure(MessageKey.Error_InternalServerError);
         }
     }
+
+    public async Task<ServiceResult<bool>> ValidateAudioFileWithUserAsync(Guid audioId, Guid userId)
+    {
+        try
+        {
+            var isValid = await audioData.AudioFileBelongsToUserAsync(audioId, userId);
+            if (!isValid)
+            {
+                return ServiceResult<bool>.Failure(MessageKey.Error_Unauthorized);
+            }
+
+            return ServiceResult<bool>.SuccessResult(true);
+        }
+        catch
+        {
+            return ServiceResult<bool>.Failure(MessageKey.Error_InternalServerError);
+        }
+    }
 }

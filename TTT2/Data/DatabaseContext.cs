@@ -33,6 +33,23 @@ namespace TTT2.Data
             command.Parameters.AddRange(parameters);
             return await command.ExecuteReaderAsync(CommandBehavior.CloseConnection);
         }
+        
+        public async Task<T> ExecuteScalarAsync<T>(string query, params MySqlParameter[] parameters)
+        {
+            using var command = new MySqlCommand(query, _connection);
+            command.Parameters.AddRange(parameters);
+
+            await OpenAsync();
+            var result = await command.ExecuteScalarAsync();
+
+            if (result == null || result == DBNull.Value)
+                return default(T)!;
+            
+            if (typeof(T) == typeof(int) && result is long longValue)
+                return (T)(object)(int)longValue;
+
+            return (T)result;
+        }
 
         public void Dispose()
         {

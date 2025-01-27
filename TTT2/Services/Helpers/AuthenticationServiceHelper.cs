@@ -58,6 +58,25 @@ namespace TTT2.Services.Helpers
 
             return ServiceResult<User>.SuccessResult(user);
         }
+        
+        public async Task<ServiceResult<User>> GetUserByIdAsync(Guid userId)
+        {
+            try
+            {
+                var user = await authData.GetUserByIdAsync(userId);
+
+                if (user == null)
+                {
+                    return ServiceResult<User>.Failure(MessageKey.Error_Unauthorized);
+                }
+
+                return ServiceResult<User>.SuccessResult(user, MessageKey.Success_DataRetrieved);
+            }
+            catch
+            {
+                return ServiceResult<User>.Failure(MessageKey.Error_InternalServerError);
+            }
+        }
 
         public ServiceResult<string> GenerateJwtToken(Guid userGuid, string username)
         {

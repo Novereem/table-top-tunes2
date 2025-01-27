@@ -35,5 +35,8 @@ namespace Shared.Enums
         
         //Audio
         Success_AudioCreation,
+        
+        //SceneAudio
+        Success_SceneAudioAssignment
     }
 }

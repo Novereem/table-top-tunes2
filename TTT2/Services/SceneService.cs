@@ -42,12 +42,12 @@ namespace TTT2.Services
                 var userResult = await authenticationService.GetUserByIdAsync(userIdResult.Data);
                 if (userResult.IsFailure || userResult.Data == null)
                 {
-                    return HttpServiceResult<SceneCreateResponseDTO>.FromServiceResult(validationResult.ToFailureResult<SceneCreateResponseDTO>());
+                    return HttpServiceResult<SceneCreateResponseDTO>.FromServiceResult(userResult.ToFailureResult<SceneCreateResponseDTO>());
                 }
                 var createdSceneResult = await helper.CreateSceneAsync(sceneDTO, userResult.Data);
                 if (createdSceneResult.IsFailure)
                 {
-                    return HttpServiceResult<SceneCreateResponseDTO>.FromServiceResult(validationResult.ToFailureResult<SceneCreateResponseDTO>());
+                    return HttpServiceResult<SceneCreateResponseDTO>.FromServiceResult(createdSceneResult.ToFailureResult<SceneCreateResponseDTO>());
                 }
                 return HttpServiceResult<SceneCreateResponseDTO>.FromServiceResult(
                     ServiceResult<SceneCreateResponseDTO>.SuccessResult(createdSceneResult.Data, MessageKey.Success_SceneCreation)
@@ -79,6 +79,11 @@ namespace TTT2.Services
             {
                 return HttpServiceResult<List<SceneListItemDTO>>.FromServiceResult(ServiceResult<List<SceneListItemDTO>>.Failure(MessageKey.Error_InternalServerError));
             }
+        }
+
+        public async Task<ServiceResult<bool>> ValidateSceneWithUserAsync(Guid sceneId, Guid userId)
+        {
+            return await helper.ValidateSceneWithUserAsync(sceneId, userId);
         }
     }
 }
