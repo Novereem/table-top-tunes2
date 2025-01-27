@@ -18,9 +18,9 @@ namespace TTT2.Controllers
         }
 
         [HttpGet("get-scenes")]
-        public async Task<IActionResult> GetScenesList(Guid id)
+        public async Task<IActionResult> GetScenesList()
         {
-            var result = await sceneService.GetScenesListByUserIdAsync(id, User);
+            var result = await sceneService.GetScenesListByUserIdAsync(User);
             return this.ToActionResult(result);
         }
     }

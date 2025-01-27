@@ -14,5 +14,6 @@ namespace Shared.Interfaces.Services.Helpers
         ServiceResult<object> ValidateSceneCreate(SceneCreateDTO sceneDTO);
         Task<ServiceResult<SceneCreateResponseDTO>> CreateSceneAsync(SceneCreateDTO sceneDTO, User user);
         Task<ServiceResult<List<Scene>>> RetrieveScenesByUserIdAsync(Guid userId);
+        Task<ServiceResult<bool>> ValidateSceneWithUserAsync(Guid sceneId, Guid userId);
     }
 }

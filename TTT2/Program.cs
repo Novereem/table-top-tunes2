@@ -29,11 +29,14 @@ builder.Services.AddScoped<ISceneService, SceneService>();
 builder.Services.AddScoped<ISceneData, SceneData>();
 builder.Services.AddScoped<IAudioService, AudioService>();
 builder.Services.AddScoped<IAudioData, AudioData>();
+builder.Services.AddScoped<ISceneAudioService, SceneAudioService>();
+builder.Services.AddScoped<ISceneAudioData, SceneAudioData>();
 
 
 builder.Services.AddScoped<IAuthenticationServiceHelper, AuthenticationServiceHelper>();
 builder.Services.AddScoped<ISceneServiceHelper, SceneServiceHelper>();
 builder.Services.AddScoped<IAudioServiceHelper, AudioServiceHelper>();
+builder.Services.AddScoped<ISceneAudioServiceHelper, SceneAudioServiceHelper>();
 
 // CORS Policy
 builder.Services.AddCors(options =>

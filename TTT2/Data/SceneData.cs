@@ -59,5 +59,19 @@ namespace TTT2.Data
 
             return scenes;
         }
+        
+        public async Task<bool> SceneBelongsToUserAsync(Guid sceneId, Guid userId)
+        {
+            const string query = "SELECT COUNT(*) FROM Scenes WHERE Id = @SceneId AND UserId = @UserId;";
+            using var context = new DatabaseContext();
+
+            await context.OpenAsync();
+            var count = await context.ExecuteScalarAsync<int>(query, 
+                new MySqlParameter("@SceneId", sceneId),
+                new MySqlParameter("@UserId", userId)
+            );
+
+            return count > 0;
+        }
     }
 }

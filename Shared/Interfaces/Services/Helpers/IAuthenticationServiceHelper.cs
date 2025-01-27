@@ -13,6 +13,7 @@ namespace Shared.Interfaces.Services.Helpers
     {
         Task<ServiceResult<User>> ValidateLoginAsync(LoginDTO loginDTO);
         Task<ServiceResult<object>> ValidateRegistrationAsync(RegisterDTO registerDTO);
+        Task<ServiceResult<User>> GetUserByIdAsync(Guid userId);
         ServiceResult<string> GenerateJwtToken(Guid userGuid, string username);
     }
 }

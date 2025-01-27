@@ -38,4 +38,18 @@ public class AudioData : IAudioData
 
         return null;
     }
+    
+    public async Task<bool> AudioFileBelongsToUserAsync(Guid audioFileId, Guid userId)
+    {
+        const string query = "SELECT COUNT(*) FROM AudioFiles WHERE Id = @AudioFileId AND UserId = @UserId;";
+        using var context = new DatabaseContext();
+
+        await context.OpenAsync();
+        var count = await context.ExecuteScalarAsync<int>(query, 
+            new MySqlParameter("@AudioFileId", audioFileId),
+            new MySqlParameter("@UserId", userId)
+        );
+
+        return count > 0;
+    }
 }

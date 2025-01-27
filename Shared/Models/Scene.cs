@@ -12,9 +12,5 @@ namespace Shared.Models
         public string Name { get; set; } = string.Empty;
         public Guid UserId { get; set; }
         public DateTime CreatedAt { get; set; }
-
-        // Navigation properties
-        public User User { get; set; } = null!;
-        public List<SceneAudioFile> SceneAudioFiles { get; set; } = [];
     }
 }

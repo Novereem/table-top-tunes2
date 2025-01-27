@@ -11,5 +11,6 @@ namespace Shared.Interfaces.Data
     {
         Task<Scene?> CreateSceneAsync(Scene scene);
         Task<List<Scene>> GetScenesByUserIdAsync(Guid userId);
+        Task<bool> SceneBelongsToUserAsync(Guid sceneId, Guid userId);
     }
 }

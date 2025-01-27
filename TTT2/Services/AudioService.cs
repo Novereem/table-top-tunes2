@@ -47,4 +47,9 @@ public class AudioService(IUserClaimsService userClaimsService, IAudioServiceHel
                 ServiceResult<AudioFileCreateResponseDTO>.Failure(MessageKey.Error_InternalServerError));
         }
     }
+
+    public async Task<ServiceResult<bool>> ValidateAudioFileWithUserAsync(Guid audioId, Guid userId)
+    {
+        return await helper.ValidateAudioFileWithUserAsync(audioId, userId);
+    }
 }
