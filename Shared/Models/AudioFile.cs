@@ -10,7 +10,6 @@ namespace Shared.Models
     public class AudioFile : BaseEntity
     {
         public string Name { get; set; } = string.Empty;
-        public string FilePath { get; set; } = string.Empty;
         public Guid UserId { get; set; }
         public DateTime CreatedAt { get; set; }
     }

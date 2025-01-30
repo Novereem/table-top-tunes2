@@ -8,8 +8,7 @@ public static class AudioFileExtensions
     {
         return new AudioFile
         {
-            Name = dto.Name,
-            FilePath = "/path/to/file"
+            Name = dto.Name
         };
     }
 

@@ -12,9 +12,15 @@ namespace TTT2.Controllers
     public class AudioController(IAudioService audioService) : ControllerBase
     {
         [HttpPost("create-audio")]
-        public async Task<IActionResult> CreateAudio([FromBody] AudioFileCreateDTO audioFileCreateDTO)
+        public async Task<IActionResult> CreateAudio([FromForm] AudioFileCreateDTO audioFileCreateDTO)
         {
             var result = await audioService.CreateAudioFileAsync(audioFileCreateDTO, User);
+            return this.ToActionResult(result);
+        }
+        [HttpDelete("remove-audio")]
+        public async Task<IActionResult> RemoveAudio([FromBody] AudioFileRemoveDTO audioFileRemoveDTO)
+        {
+            var result = await audioService.DeleteAudioFileAsync(audioFileRemoveDTO, User);
             return this.ToActionResult(result);
         }
     }
