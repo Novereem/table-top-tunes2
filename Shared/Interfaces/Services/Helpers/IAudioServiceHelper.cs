@@ -8,5 +8,6 @@ public interface IAudioServiceHelper
 {
     ServiceResult<object> ValidateAudioFileCreateRequest(AudioFileCreateDTO createDTO);
     Task<ServiceResult<AudioFileCreateResponseDTO>> CreateAudioFileAsync(AudioFileCreateDTO audioFileCreateDTO, User user);
+    Task<ServiceResult<bool>> DeleteAudioFileAsync(AudioFileRemoveDTO audioFileRemoveDTO, User user);
     Task<ServiceResult<bool>> ValidateAudioFileWithUserAsync(Guid audioId, Guid userId);
 }

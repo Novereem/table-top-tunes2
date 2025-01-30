@@ -43,6 +43,27 @@ public class AudioData : IAudioData
         }
     }
     
+    public async Task<DataResult<bool>> RemoveAudioFileAsync(Guid audioFileId, Guid userId)
+    {
+        const string deleteQuery = "DELETE FROM AudioFiles WHERE Id = @AudioFileId AND UserId = @UserId;";
+        using var context = new DatabaseContext();
+        
+        try
+        {
+            await context.OpenAsync();
+            var rowsAffected = await context.ExecuteNonQueryAsync(deleteQuery,
+                new MySqlParameter("@AudioFileId", audioFileId),
+                new MySqlParameter("@UserId", userId)
+            );
+
+            return rowsAffected > 0 ? DataResult<bool>.Success(true) : DataResult<bool>.NotFound();
+        }
+        catch
+        {
+            return DataResult<bool>.Error();
+        }
+    }
+    
     public async Task<DataResult<bool>> AudioFileBelongsToUserAsync(Guid audioFileId, Guid userId)
     {
         const string query = "SELECT COUNT(*) FROM AudioFiles WHERE Id = @AudioFileId AND UserId = @UserId;";

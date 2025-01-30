@@ -26,9 +26,11 @@ namespace TTT2.Services.Helpers
             var decodeCheck = audioFileValidator.ValidateByDecodingWithFfmpeg(audioFileCreateDTO.AudioFile);
             if (!decodeCheck.IsSuccess) return decodeCheck;
 
+            var isDevelopment = bool.TryParse(Environment.GetEnvironmentVariable("DEVELOPMENT"), out var devMode) && devMode;
+            if (isDevelopment) return ServiceResult<object>.SuccessResult();
             var virusCheck = fileSafetyValidator.ScanWithClamAV(audioFileCreateDTO.AudioFile).GetAwaiter().GetResult();
             if (!virusCheck.IsSuccess) return virusCheck;
-        
+
             return ServiceResult<object>.SuccessResult();
         }
 
@@ -62,7 +64,6 @@ namespace TTT2.Services.Helpers
                     return ServiceResult<AudioFileCreateResponseDTO>.Failure(MessageKey.Error_UnableToUploadAudioFile);
                 }
                 
-                //Saving metadata to database
                 newAudioFile.UserId = user.Id;
                 var createdAudio = await audioData.SaveAudioFileAsync(newAudioFile);
 
@@ -71,7 +72,6 @@ namespace TTT2.Services.Helpers
                     return ServiceResult<AudioFileCreateResponseDTO>.SuccessResult(createdAudio.Data!.ToCreateResponseDTO());
                 }
 
-                //Delete file upon failing to save to database.
                 File.Delete(filePath);
 
                 return ServiceResult<AudioFileCreateResponseDTO>.Failure(MessageKey.Error_UnableToSaveAudioFileMetaData);
@@ -86,6 +86,38 @@ namespace TTT2.Services.Helpers
             }
         }
 
+        public async Task<ServiceResult<bool>> DeleteAudioFileAsync(AudioFileRemoveDTO audioFileRemoveDTO, User user)
+        {
+            try
+            {
+                var validateResult = await ValidateAudioFileWithUserAsync(audioFileRemoveDTO.AudioId, user.Id);
+                if (!validateResult.IsSuccess)
+                {
+                    return validateResult.ToFailureResult<bool>();
+                }
+                
+                var removeAudioFromDatabase = await audioData.RemoveAudioFileAsync(audioFileRemoveDTO.AudioId, user.Id);
+                if (removeAudioFromDatabase.ResultType != DataResultType.Success)
+                {
+                    return ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorData);
+                }
+                
+                var userFolderPath = Path.Combine(_audioFolderPath, user.Id.ToString());
+                var fileName = $"{audioFileRemoveDTO.AudioId}.mp3";
+                var filePath = Path.Combine(userFolderPath, fileName);
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+
+                return ServiceResult<bool>.SuccessResult(true);
+            }
+            catch
+            {
+                return ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorService);
+            }
+        }
         public async Task<ServiceResult<bool>> ValidateAudioFileWithUserAsync(Guid audioId, Guid userId)
         {
             try

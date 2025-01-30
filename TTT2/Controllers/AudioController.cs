@@ -17,5 +17,11 @@ namespace TTT2.Controllers
             var result = await audioService.CreateAudioFileAsync(audioFileCreateDTO, User);
             return this.ToActionResult(result);
         }
+        [HttpDelete("remove-audio")]
+        public async Task<IActionResult> RemoveAudio([FromBody] AudioFileRemoveDTO audioFileRemoveDTO)
+        {
+            var result = await audioService.DeleteAudioFileAsync(audioFileRemoveDTO, User);
+            return this.ToActionResult(result);
+        }
     }
 }

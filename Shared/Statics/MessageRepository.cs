@@ -54,11 +54,12 @@ namespace Shared.Statics
         
         //Audio
         { MessageKey.Success_AudioCreation, new MessageInfo("S006", "Created audio succesfully", "Created the audio successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_AudioRemoval, new MessageInfo("S007", "Removed audio succesfully", "Removed the audio successfully!", MessageType.Success, HttpStatusCode.OK) },
         
         //SceneAudio
-        { MessageKey.Success_SceneAudioAssignment, new MessageInfo("S007", "Audio assigned to scene succesfully", "Audio assigned to scene successfully!", MessageType.Success, HttpStatusCode.OK) },
-        { MessageKey.Success_SceneAudioRemoval, new MessageInfo("S008", "Removed audio from scene succesfully", "Removed audio from scene successfully!", MessageType.Success, HttpStatusCode.OK) },
-        { MessageKey.Success_SceneAudioFilesRetrieval, new MessageInfo("S009", "Retrieved audio files from scene succesfully", "Retrieved audio files from scene successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_SceneAudioAssignment, new MessageInfo("S008", "Audio assigned to scene succesfully", "Audio assigned to scene successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_SceneAudioRemoval, new MessageInfo("S009", "Removed audio from scene succesfully", "Removed audio from scene successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_SceneAudioFilesRetrieval, new MessageInfo("S010", "Retrieved audio files from scene succesfully", "Retrieved audio files from scene successfully!", MessageType.Success, HttpStatusCode.OK) },
     };
 
         public static MessageInfo GetMessage(MessageKey key)
