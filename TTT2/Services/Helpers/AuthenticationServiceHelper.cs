@@ -10,6 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Xml.Linq;
+using Shared.Models.Extensions;
 
 namespace TTT2.Services.Helpers
 {
@@ -20,14 +21,19 @@ namespace TTT2.Services.Helpers
     {
         public async Task<ServiceResult<object>> ValidateRegistrationAsync(RegisterDTO registerDTO)
         {
-            if (await authData.GetUserByEmailAsync(registerDTO.Email) != null)
+            var existingUser = await authData.GetUserByEmailAsync(registerDTO.Email);
+            if (existingUser.ResultType == DataResultType.Success)
             {
                 return ServiceResult<object>.Failure(MessageKey.Error_EmailTaken);
             }
-            if (string.IsNullOrWhiteSpace(registerDTO.Username) || string.IsNullOrWhiteSpace(registerDTO.Password) || string.IsNullOrWhiteSpace(registerDTO.Email))
+
+            if (string.IsNullOrWhiteSpace(registerDTO.Username) || 
+                string.IsNullOrWhiteSpace(registerDTO.Password) || 
+                string.IsNullOrWhiteSpace(registerDTO.Email))
             {
                 return ServiceResult<object>.Failure(MessageKey.Error_InvalidInput);
             }
+
             if (registerDTO.Password.Length < 5)
             {
                 return ServiceResult<object>.Failure(MessageKey.Error_PasswordTooShort);
@@ -40,24 +46,51 @@ namespace TTT2.Services.Helpers
                 {
                     return ServiceResult<object>.Failure(MessageKey.Error_InvalidEmail);
                 }
-            } 
+                return ServiceResult<object>.SuccessResult();
+            }
             catch
             {
-                return ServiceResult<object>.Failure(MessageKey.Error_InvalidEmail);
+                return ServiceResult<object>.Failure(MessageKey.Error_InternalServerErrorService);
             }
-            return ServiceResult<object>.SuccessResult();
+        }
+        
+        public async Task<ServiceResult<User>> RegisterUserAsync(RegisterDTO registerDTO)
+        {
+            var userFromRegisterDTO = registerDTO.ToUserFromRegisterDTO(passwordHashingService);
+            try
+            {
+                var newUser = await authData.RegisterUserAsync(userFromRegisterDTO);
+                return newUser.ResultType switch
+                {
+                    DataResultType.Success => ServiceResult<User>.SuccessResult(newUser.Data),
+                    DataResultType.Error => ServiceResult<User>.Failure(MessageKey.Error_InternalServerErrorData),
+                    _ => ServiceResult<User>.Failure(MessageKey.Error_InternalServerErrorData)
+                };
+            }
+            catch
+            {
+                return ServiceResult<User>.Failure(MessageKey.Error_InternalServerErrorService);
+            }
         }
 
         public async Task<ServiceResult<User>> ValidateLoginAsync(LoginDTO loginDTO)
         {
             var user = await authData.GetUserByUsernameAsync(loginDTO.Username);
-            if (user == null || !passwordHashingService.VerifyPassword(loginDTO.Password, user.PasswordHash))
+            try
             {
-                return ServiceResult<User>.Failure(MessageKey.Error_InvalidCredentials);
+                if (user.ResultType != DataResultType.Success || 
+                    !passwordHashingService.VerifyPassword(loginDTO.Password, user.Data!.PasswordHash))
+                {
+                    return ServiceResult<User>.Failure(MessageKey.Error_InvalidCredentials);
+                }
+                return ServiceResult<User>.SuccessResult(user.Data!);
             }
-
-            return ServiceResult<User>.SuccessResult(user);
+            catch
+            {
+                return ServiceResult<User>.Failure(MessageKey.Error_InternalServerErrorService);
+            }
         }
+
         
         public async Task<ServiceResult<User>> GetUserByIdAsync(Guid userId)
         {
@@ -65,16 +98,17 @@ namespace TTT2.Services.Helpers
             {
                 var user = await authData.GetUserByIdAsync(userId);
 
-                if (user == null)
+                return user.ResultType switch
                 {
-                    return ServiceResult<User>.Failure(MessageKey.Error_Unauthorized);
-                }
-
-                return ServiceResult<User>.SuccessResult(user, MessageKey.Success_DataRetrieved);
+                    DataResultType.Success => ServiceResult<User>.SuccessResult(user.Data!, MessageKey.Success_DataRetrieved),
+                    DataResultType.NotFound => ServiceResult<User>.Failure(MessageKey.Error_Unauthorized),
+                    DataResultType.Error => ServiceResult<User>.Failure(MessageKey.Error_InternalServerErrorData),
+                    _ => ServiceResult<User>.Failure(MessageKey.Error_InternalServerErrorData)
+                };
             }
             catch
             {
-                return ServiceResult<User>.Failure(MessageKey.Error_InternalServerError);
+                return ServiceResult<User>.Failure(MessageKey.Error_InternalServerErrorService);
             }
         }
 

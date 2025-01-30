@@ -15,19 +15,22 @@ namespace Shared.Statics
     {
         /// Error
         //Standard
-        { MessageKey.Error_InternalServerError, new MessageInfo("E001", "An unexpected error occurred.", "Something went wrong. Please try again.", MessageType.Error, HttpStatusCode.InternalServerError) },
+        { MessageKey.Error_InternalServerError, new MessageInfo("E001", "A general unexpected error occurred.", "Something went wrong. Please try again later.", MessageType.Error, HttpStatusCode.InternalServerError) },
         { MessageKey.Error_InvalidInput, new MessageInfo("E002", "Invalid input provided.", "Your input is invalid. Please check and try again.", MessageType.Error, HttpStatusCode.BadRequest) },
+        { MessageKey.Error_NotFound, new MessageInfo("E003", "Target not found.", "Target was not found, please try again later.", MessageType.Error, HttpStatusCode.BadRequest) },
+        { MessageKey.Error_InternalServerErrorService, new MessageInfo("E004", "An unexpected service error occurred.", "Something went wrong. Please try again later.", MessageType.Error, HttpStatusCode.BadRequest) },
+        { MessageKey.Error_InternalServerErrorData, new MessageInfo("E005", "An unexpected data error occurred.", "Something went wrong. Please try again later.", MessageType.Error, HttpStatusCode.BadRequest) },
         
         //Authentication
-        { MessageKey.Error_PasswordTooShort, new MessageInfo("E003", "Password too short when registering.", "Password is too short, the password has to be atleast 5 characters long.", MessageType.Error, HttpStatusCode.BadRequest) },
-        { MessageKey.Error_EmailTaken, new MessageInfo("E004", "Email taken.", "This email has already been taken, please try again with a different email.", MessageType.Error, HttpStatusCode.BadRequest) },
-        { MessageKey.Error_InvalidEmail, new MessageInfo("E005", "Invalid email", "Please provide a valid email.", MessageType.Error, HttpStatusCode.BadRequest) },
-        { MessageKey.Error_JWTNullOrEmpty, new MessageInfo("E006", "JWT secret key is null.", "Something went wrong. Please try again.", MessageType.Error, HttpStatusCode.InternalServerError) },
-        { MessageKey.Error_InvalidCredentials, new MessageInfo("E007", "Invalid credentials", "Wrong username and or password, please try again.", MessageType.Error, HttpStatusCode.Unauthorized) },
-        { MessageKey.Error_Unauthorized, new MessageInfo("E008", "Not authorized", "Something went wrong, please try to re-log back in.", MessageType.Error, HttpStatusCode.Unauthorized) },
+        { MessageKey.Error_PasswordTooShort, new MessageInfo("E006", "Password too short when registering.", "Password is too short, the password has to be atleast 5 characters long.", MessageType.Error, HttpStatusCode.BadRequest) },
+        { MessageKey.Error_EmailTaken, new MessageInfo("E007", "Email taken.", "This email has already been taken, please try again with a different email.", MessageType.Error, HttpStatusCode.BadRequest) },
+        { MessageKey.Error_InvalidEmail, new MessageInfo("E008", "Invalid email", "Please provide a valid email.", MessageType.Error, HttpStatusCode.BadRequest) },
+        { MessageKey.Error_JWTNullOrEmpty, new MessageInfo("E009", "JWT secret key is null.", "Something went wrong. Please try again.", MessageType.Error, HttpStatusCode.InternalServerError) },
+        { MessageKey.Error_InvalidCredentials, new MessageInfo("E010", "Invalid credentials", "Wrong username and or password, please try again.", MessageType.Error, HttpStatusCode.Unauthorized) },
+        { MessageKey.Error_Unauthorized, new MessageInfo("E011", "Not authorized", "Something went wrong, please try to re-log back in.", MessageType.Error, HttpStatusCode.Unauthorized) },
         
         //SceneAudio
-        { MessageKey.Error_SceneAudioAlreadyAdded, new MessageInfo("E009", "Audio already added to scene", "This audio has already been added to the scene.", MessageType.Error, HttpStatusCode.Conflict) },
+        { MessageKey.Error_SceneAudioAlreadyAdded, new MessageInfo("E012", "Audio already added to scene", "This audio has already been added to the scene.", MessageType.Error, HttpStatusCode.Conflict) },
         
         /// Success
         //Standard

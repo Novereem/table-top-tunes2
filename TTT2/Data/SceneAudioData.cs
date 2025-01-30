@@ -2,12 +2,13 @@ using MySqlConnector;
 using Shared.Enums;
 using Shared.Interfaces.Data;
 using Shared.Models;
+using Shared.Models.Common;
 
 namespace TTT2.Data
 {
     public class SceneAudioData : ISceneAudioData
     {
-        public async Task<SceneAudioFile?> AddSceneAudioFileAsync(SceneAudioFile sceneAudioFile)
+        public async Task<DataResult<SceneAudioFile>> AddSceneAudioFileAsync(SceneAudioFile sceneAudioFile)
         {
             const string checkExistenceQuery = @"
                 SELECT COUNT(*) 
@@ -26,44 +27,50 @@ namespace TTT2.Data
             using var context = new DatabaseContext();
             await context.OpenAsync();
 
-            // Check if the record already exists
-            var exists = await context.ExecuteScalarAsync<long>(checkExistenceQuery,
-                new MySqlParameter("@SceneId", sceneAudioFile.SceneId),
-                new MySqlParameter("@AudioFileId", sceneAudioFile.AudioFileId),
-                new MySqlParameter("@AudioType", sceneAudioFile.AudioType.ToString()));
-
-            if (exists > 0)
+            try
             {
-                // Return null or handle the existence case as needed
-                return null;
-            }
+                // Check if the record already exists
+                var exists = await context.ExecuteScalarAsync<long>(checkExistenceQuery,
+                    new MySqlParameter("@SceneId", sceneAudioFile.SceneId),
+                    new MySqlParameter("@AudioFileId", sceneAudioFile.AudioFileId),
+                    new MySqlParameter("@AudioType", sceneAudioFile.AudioType.ToString()));
 
-            // Insert the record
-            await context.ExecuteNonQueryAsync(insertQuery,
-                new MySqlParameter("@SceneId", sceneAudioFile.SceneId),
-                new MySqlParameter("@AudioFileId", sceneAudioFile.AudioFileId),
-                new MySqlParameter("@AudioType", sceneAudioFile.AudioType.ToString()));
-
-            // Retrieve the inserted record
-            await using var reader = await context.ExecuteQueryAsync(selectQuery,
-                new MySqlParameter("@SceneId", sceneAudioFile.SceneId),
-                new MySqlParameter("@AudioFileId", sceneAudioFile.AudioFileId),
-                new MySqlParameter("@AudioType", sceneAudioFile.AudioType.ToString()));
-
-            if (await reader.ReadAsync())
-            {
-                return new SceneAudioFile
+                if (exists > 0)
                 {
-                    SceneId = reader.GetGuid("SceneId"),
-                    AudioFileId = reader.GetGuid("AudioFileId"),
-                    AudioType = Enum.Parse<AudioType>(reader.GetString("AudioType"))
-                };
-            }
+                    return DataResult<SceneAudioFile>.AlreadyExists();
+                }
 
-            return null;
+                // Insert the record
+                await context.ExecuteNonQueryAsync(insertQuery,
+                    new MySqlParameter("@SceneId", sceneAudioFile.SceneId),
+                    new MySqlParameter("@AudioFileId", sceneAudioFile.AudioFileId),
+                    new MySqlParameter("@AudioType", sceneAudioFile.AudioType.ToString()));
+
+                // Retrieve the inserted record
+                await using var reader = await context.ExecuteQueryAsync(selectQuery,
+                    new MySqlParameter("@SceneId", sceneAudioFile.SceneId),
+                    new MySqlParameter("@AudioFileId", sceneAudioFile.AudioFileId),
+                    new MySqlParameter("@AudioType", sceneAudioFile.AudioType.ToString()));
+
+                if (await reader.ReadAsync())
+                {
+                    return DataResult<SceneAudioFile>.Success(new SceneAudioFile
+                    {
+                        SceneId = reader.GetGuid("SceneId"),
+                        AudioFileId = reader.GetGuid("AudioFileId"),
+                        AudioType = Enum.Parse<AudioType>(reader.GetString("AudioType"))
+                    });
+                }
+
+                return DataResult<SceneAudioFile>.Error();
+            }
+            catch
+            {
+                return DataResult<SceneAudioFile>.Error();
+            }
         }
         
-        public async Task<bool> RemoveSceneAudioFileAsync(SceneAudioFile sceneAudioFile)
+        public async Task<DataResult<bool>> RemoveSceneAudioFileAsync(SceneAudioFile sceneAudioFile)
         {
             const string deleteQuery = @"
         DELETE FROM SceneAudioFile 
@@ -71,18 +78,30 @@ namespace TTT2.Data
 
             using var context = new DatabaseContext();
 
-            await context.OpenAsync();
+            try
+            {
+                await context.OpenAsync();
 
-            var rowsAffected = await context.ExecuteNonQueryAsync(deleteQuery,
-                new MySqlParameter("@SceneId", sceneAudioFile.SceneId),
-                new MySqlParameter("@AudioFileId", sceneAudioFile.AudioFileId),
-                new MySqlParameter("@AudioType", sceneAudioFile.AudioType.ToString())
-            );
+                var rowsAffected = await context.ExecuteNonQueryAsync(deleteQuery,
+                    new MySqlParameter("@SceneId", sceneAudioFile.SceneId),
+                    new MySqlParameter("@AudioFileId", sceneAudioFile.AudioFileId),
+                    new MySqlParameter("@AudioType", sceneAudioFile.AudioType.ToString())
+                );
 
-            return rowsAffected > 0;
+                if (rowsAffected > 0)
+                {
+                    return DataResult<bool>.Success(true);
+                }
+
+                return DataResult<bool>.NotFound();
+            }
+            catch
+            {
+                return DataResult<bool>.Error();
+            }
         }
         
-        public async Task<List<SceneAudioFile>> GetSceneAudioFilesBySceneIdAsync(Guid sceneId)
+        public async Task<DataResult<List<SceneAudioFile>>> GetSceneAudioFilesBySceneIdAsync(Guid sceneId)
         {
             const string query = @"
         SELECT SceneId, AudioFileId, AudioType 
@@ -91,24 +110,36 @@ namespace TTT2.Data
 
             using var context = new DatabaseContext();
 
-            await context.OpenAsync();
-
-            await using var reader = await context.ExecuteQueryAsync(query, 
-                new MySqlParameter("@SceneId", sceneId)
-            );
-
-            var sceneAudioFiles = new List<SceneAudioFile>();
-            while (await reader.ReadAsync())
+            try
             {
-                sceneAudioFiles.Add(new SceneAudioFile
-                {
-                    SceneId = reader.GetGuid("SceneId"),
-                    AudioFileId = reader.GetGuid("AudioFileId"),
-                    AudioType = Enum.Parse<AudioType>(reader.GetString("AudioType"))
-                });
-            }
+                await context.OpenAsync();
 
-            return sceneAudioFiles;
+                await using var reader = await context.ExecuteQueryAsync(query, 
+                    new MySqlParameter("@SceneId", sceneId)
+                );
+
+                var sceneAudioFiles = new List<SceneAudioFile>();
+                while (await reader.ReadAsync())
+                {
+                    sceneAudioFiles.Add(new SceneAudioFile
+                    {
+                        SceneId = reader.GetGuid("SceneId"),
+                        AudioFileId = reader.GetGuid("AudioFileId"),
+                        AudioType = Enum.Parse<AudioType>(reader.GetString("AudioType"))
+                    });
+                }
+
+                if (sceneAudioFiles.Count > 0)
+                {
+                    return DataResult<List<SceneAudioFile>>.Success(sceneAudioFiles);
+                }
+
+                return DataResult<List<SceneAudioFile>>.NotFound();
+            }
+            catch
+            {
+                return DataResult<List<SceneAudioFile>>.Error();
+            }
         }
     }
 }

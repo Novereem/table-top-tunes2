@@ -12,6 +12,9 @@ namespace Shared.Enums
         //Standard
         Error_InternalServerError,
         Error_InvalidInput,
+        Error_NotFound,
+        Error_InternalServerErrorService,
+        Error_InternalServerErrorData,
 
         //Authentication
         Error_PasswordTooShort,

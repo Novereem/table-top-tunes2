@@ -4,7 +4,6 @@ using Shared.Interfaces.Services.Helpers;
 using Shared.Models;
 using Shared.Models.Common;
 using Shared.Models.DTOs.SceneAudios;
-using Shared.Models.DTOs.Scenes;
 using Shared.Models.Extensions;
 
 namespace TTT2.Services.Helpers
@@ -16,15 +15,20 @@ namespace TTT2.Services.Helpers
             try
             {
                 var assignedAudioScene = await sceneAudioData.AddSceneAudioFileAsync(sceneAudioAssignDTO.ToSceneAudioFileFromAssignDTO());
-                if (assignedAudioScene == null)
+                return assignedAudioScene.ResultType switch
                 {
-                    return ServiceResult<SceneAudioAssignResponseDTO>.Failure(MessageKey.Error_SceneAudioAlreadyAdded);
-                }
-                return ServiceResult<SceneAudioAssignResponseDTO>.SuccessResult(assignedAudioScene.ToSceneAudioAssignDTO());
+                    DataResultType.Error => ServiceResult<SceneAudioAssignResponseDTO>.Failure(MessageKey
+                        .Error_InternalServerErrorData),
+                    DataResultType.AlreadyExists => ServiceResult<SceneAudioAssignResponseDTO>.Failure(MessageKey
+                        .Error_SceneAudioAlreadyAdded),
+                    DataResultType.Success => ServiceResult<SceneAudioAssignResponseDTO>.SuccessResult(
+                        assignedAudioScene.Data!.ToSceneAudioAssignDTO()),
+                    _ => ServiceResult<SceneAudioAssignResponseDTO>.Failure(MessageKey.Error_InternalServerError)
+                };
             }
             catch
             {
-                return ServiceResult<SceneAudioAssignResponseDTO>.Failure(MessageKey.Error_InternalServerError);
+                return ServiceResult<SceneAudioAssignResponseDTO>.Failure(MessageKey.Error_InternalServerErrorData);
             }
         }
 
@@ -34,15 +38,17 @@ namespace TTT2.Services.Helpers
             {
                 var removedSceneAudio =
                     await sceneAudioData.RemoveSceneAudioFileAsync(sceneAudioRemoveDTO.ToSceneAudioFileFromRemoveDTO());
-                if (!removedSceneAudio)
+                return removedSceneAudio.ResultType switch
                 {
-                    return ServiceResult<bool>.Failure(MessageKey.Error_InternalServerError);
-                }
-                return ServiceResult<bool>.SuccessResult(true);
+                    DataResultType.Success => ServiceResult<bool>.SuccessResult(true),
+                    DataResultType.NotFound => ServiceResult<bool>.Failure(MessageKey.Error_NotFound),
+                    DataResultType.Error => ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorData),
+                    _ => ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorData)
+                };
             }
             catch
             {
-                return ServiceResult<bool>.Failure(MessageKey.Error_InternalServerError);
+                return ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorService);
             }
         }
         
@@ -51,11 +57,17 @@ namespace TTT2.Services.Helpers
             try
             {
                 var sceneAudioFiles = await sceneAudioData.GetSceneAudioFilesBySceneIdAsync(sceneId);
-                return ServiceResult<List<SceneAudioFile>>.SuccessResult(sceneAudioFiles);
+                return sceneAudioFiles.ResultType switch
+                {
+                    DataResultType.Success => ServiceResult<List<SceneAudioFile>>.SuccessResult(sceneAudioFiles.Data),
+                    DataResultType.NotFound => ServiceResult<List<SceneAudioFile>>.SuccessResult([]),
+                    DataResultType.Error => ServiceResult<List<SceneAudioFile>>.Failure(MessageKey.Error_InternalServerErrorData),
+                    _ => ServiceResult<List<SceneAudioFile>>.Failure(MessageKey.Error_InternalServerErrorData),
+                };
             }
             catch
             {
-                return ServiceResult<List<SceneAudioFile>>.Failure(MessageKey.Error_InternalServerError);
+                return ServiceResult<List<SceneAudioFile>>.Failure(MessageKey.Error_InternalServerErrorService);
             }
         }
     }
