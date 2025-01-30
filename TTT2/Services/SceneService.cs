@@ -66,10 +66,15 @@ namespace TTT2.Services
             {
                 return HttpServiceResult<List<SceneListItemDTO>>.FromServiceResult(userIdResult.ToFailureResult<List<SceneListItemDTO>>());
             }
-
+            
+            var userResult = await authenticationService.GetUserByIdAsync(userIdResult.Data);
+            if (userResult.IsFailure || userResult.Data == null)
+            {
+                return HttpServiceResult<List<SceneListItemDTO>>.FromServiceResult(userResult.ToFailureResult<List<SceneListItemDTO>>());
+            }
             try
             {
-                var scenesResult = await helper.RetrieveScenesByUserIdAsync(userIdResult.Data);
+                var scenesResult = await helper.RetrieveScenesByUserIdAsync(userResult.Data);
                 var sceneListItems = scenesResult.Data!.Select(scene => scene.ToSceneListItemDTO()).ToList();
                 return HttpServiceResult<List<SceneListItemDTO>>.FromServiceResult(
                      ServiceResult<List<SceneListItemDTO>>.SuccessResult(sceneListItems, MessageKey.Success_DataRetrieved)

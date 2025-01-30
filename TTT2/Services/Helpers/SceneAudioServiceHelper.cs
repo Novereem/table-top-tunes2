@@ -52,11 +52,11 @@ namespace TTT2.Services.Helpers
             }
         }
         
-        public async Task<ServiceResult<List<SceneAudioFile>>> GetSceneAudioFilesAsync(Guid sceneId)
+        public async Task<ServiceResult<List<SceneAudioFile>>> GetSceneAudioFilesAsync(SceneAudioGetDTO sceneAudioGetDTO)
         {
             try
             {
-                var sceneAudioFiles = await sceneAudioData.GetSceneAudioFilesBySceneIdAsync(sceneId);
+                var sceneAudioFiles = await sceneAudioData.GetSceneAudioFilesBySceneIdAsync(sceneAudioGetDTO.SceneId);
                 return sceneAudioFiles.ResultType switch
                 {
                     DataResultType.Success => ServiceResult<List<SceneAudioFile>>.SuccessResult(sceneAudioFiles.Data),

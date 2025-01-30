@@ -39,11 +39,11 @@ namespace TTT2.Services.Helpers
             }
         }
 
-        public async Task<ServiceResult<List<Scene>>> RetrieveScenesByUserIdAsync(Guid userId)
+        public async Task<ServiceResult<List<Scene>>> RetrieveScenesByUserIdAsync(User user)
         {
             try
             {
-                var scenes = await sceneData.GetScenesByUserIdAsync(userId);
+                var scenes = await sceneData.GetScenesByUserIdAsync(user.Id);
 
                 return scenes.ResultType switch
                 {

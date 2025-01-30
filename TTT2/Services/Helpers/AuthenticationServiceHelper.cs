@@ -112,7 +112,7 @@ namespace TTT2.Services.Helpers
             }
         }
 
-        public ServiceResult<string> GenerateJwtToken(Guid userGuid, string username)
+        public ServiceResult<string> GenerateJwtToken(User user)
         {
             var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
             if (string.IsNullOrEmpty(secretKey))
@@ -122,8 +122,8 @@ namespace TTT2.Services.Helpers
 
             var claims = new[]
             {
-            new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.NameIdentifier, userGuid.ToString()),
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

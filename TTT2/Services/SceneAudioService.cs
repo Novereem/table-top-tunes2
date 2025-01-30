@@ -91,7 +91,7 @@ namespace TTT2.Services
                 {
                     return HttpServiceResult<List<SceneAudioFile>>.FromServiceResult(validScene.ToFailureResult<List<SceneAudioFile>>());
                 }
-                var sceneAudios = await helper.GetSceneAudioFilesAsync(sceneAudioGetDTO.SceneId);
+                var sceneAudios = await helper.GetSceneAudioFilesAsync(sceneAudioGetDTO);
                 if (sceneAudios.IsFailure)
                 {
                     return HttpServiceResult<List<SceneAudioFile>>.FromServiceResult(sceneAudios.ToFailureResult<List<SceneAudioFile>>());

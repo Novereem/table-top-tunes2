@@ -52,7 +52,7 @@ namespace TTT2.Services
             try
             {
                 var user = validationResult.Data;
-                var token = helper.GenerateJwtToken(user!.Id, user.Username);
+                var token = helper.GenerateJwtToken(user);
                 if (token.IsFailure)
                 {
                     return HttpServiceResult<LoginResponseDTO>.FromServiceResult(validationResult.ToFailureResult<LoginResponseDTO>());
