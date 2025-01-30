@@ -12,12 +12,9 @@ namespace TTT2.Services.Helpers
     {
         public ServiceResult<object> ValidateSceneCreate(SceneCreateDTO sceneDTO)
         {
-            if (string.IsNullOrWhiteSpace(sceneDTO.Name))
-            {
-                return ServiceResult<object>.Failure(MessageKey.Error_InvalidInput);
-            }
-
-            return ServiceResult<object>.SuccessResult();
+            return string.IsNullOrWhiteSpace(sceneDTO.Name)
+                ? ServiceResult<object>.Failure(MessageKey.Error_InvalidInput)
+                : ServiceResult<object>.SuccessResult();
         }
 
         public async Task<ServiceResult<SceneCreateResponseDTO>> CreateSceneAsync(SceneCreateDTO sceneDTO, User user)
@@ -28,23 +25,38 @@ namespace TTT2.Services.Helpers
                 newScene.UserId = user.Id;
 
                 var createdScene = await sceneData.CreateSceneAsync(newScene);
-                if (createdScene == null)
+
+                return createdScene.ResultType switch
                 {
-                    return ServiceResult<SceneCreateResponseDTO>.Failure(MessageKey.Error_InternalServerError);
-                }
-                return ServiceResult<SceneCreateResponseDTO>.SuccessResult(createdScene.ToCreateResponseDTO());
+                    DataResultType.Success => ServiceResult<SceneCreateResponseDTO>.SuccessResult(createdScene.Data!.ToCreateResponseDTO()),
+                    DataResultType.Error => ServiceResult<SceneCreateResponseDTO>.Failure(MessageKey.Error_InternalServerErrorData),
+                    _ => ServiceResult<SceneCreateResponseDTO>.Failure(MessageKey.Error_InternalServerErrorData)
+                };
             }
             catch
             {
-                return ServiceResult<SceneCreateResponseDTO>.Failure(MessageKey.Error_InternalServerError);
+                return ServiceResult<SceneCreateResponseDTO>.Failure(MessageKey.Error_InternalServerErrorService);
             }
         }
 
         public async Task<ServiceResult<List<Scene>>> RetrieveScenesByUserIdAsync(Guid userId)
         {
-            var scenes = await sceneData.GetScenesByUserIdAsync(userId);
+            try
+            {
+                var scenes = await sceneData.GetScenesByUserIdAsync(userId);
 
-            return ServiceResult<List<Scene>>.SuccessResult(scenes);
+                return scenes.ResultType switch
+                {
+                    DataResultType.Success => ServiceResult<List<Scene>>.SuccessResult(scenes.Data!),
+                    DataResultType.NotFound => ServiceResult<List<Scene>>.SuccessResult([]),
+                    DataResultType.Error => ServiceResult<List<Scene>>.Failure(MessageKey.Error_InternalServerErrorData),
+                    _ => ServiceResult<List<Scene>>.Failure(MessageKey.Error_InternalServerErrorData)
+                };
+            }
+            catch
+            {
+                return ServiceResult<List<Scene>>.Failure(MessageKey.Error_InternalServerErrorService);
+            }
         }
 
         public async Task<ServiceResult<bool>> ValidateSceneWithUserAsync(Guid sceneId, Guid userId)
@@ -52,16 +64,18 @@ namespace TTT2.Services.Helpers
             try
             {
                 var isValid = await sceneData.SceneBelongsToUserAsync(sceneId, userId);
-                if (!isValid)
-                {
-                    return ServiceResult<bool>.Failure(MessageKey.Error_Unauthorized);
-                }
 
-                return ServiceResult<bool>.SuccessResult(true);
+                return isValid.ResultType switch
+                {
+                    DataResultType.Success => ServiceResult<bool>.SuccessResult(true),
+                    DataResultType.NotFound => ServiceResult<bool>.Failure(MessageKey.Error_Unauthorized),
+                    DataResultType.Error => ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorData),
+                    _ => ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorData)
+                };
             }
             catch
             {
-                return ServiceResult<bool>.Failure(MessageKey.Error_InternalServerError);
+                return ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorService);
             }
         }
     }

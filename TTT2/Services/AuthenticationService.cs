@@ -11,9 +11,7 @@ using Shared.Models.Extensions;
 namespace TTT2.Services
 {
     public class AuthenticationService(
-        IAuthenticationServiceHelper helper,
-        IPasswordHashingService passwordHashingService,
-        IAuthenticationData authData)
+        IAuthenticationServiceHelper helper)
         : IAuthenticationService
     {
         public async Task<HttpServiceResult<RegisterResponseDTO>> RegisterUserAsync(RegisterDTO registerDTO)
@@ -24,12 +22,23 @@ namespace TTT2.Services
                 return HttpServiceResult<RegisterResponseDTO>.FromServiceResult(validationResult.ToFailureResult<RegisterResponseDTO>());
             }
 
-            var newUser = registerDTO.ToUserFromRegisterDTO(passwordHashingService);
-            await authData.RegisterUserAsync(newUser);
+            try
+            {
+                var newRegisteredUser = await helper.RegisterUserAsync(registerDTO);
 
-            return HttpServiceResult<RegisterResponseDTO>.FromServiceResult(
-                ServiceResult<RegisterResponseDTO>.SuccessResult(newUser.ToRegisterResponseDTO(), MessageKey.Success_Register)
-            );
+                if (newRegisteredUser.IsFailure)
+                {
+                    return HttpServiceResult<RegisterResponseDTO>.FromServiceResult(newRegisteredUser.ToFailureResult<RegisterResponseDTO>());
+                }
+                return HttpServiceResult<RegisterResponseDTO>.FromServiceResult(
+                    ServiceResult<RegisterResponseDTO>.SuccessResult(newRegisteredUser.Data!.ToRegisterResponseDTO(),
+                        MessageKey.Success_Register)
+                );
+            }
+            catch
+            {
+                return HttpServiceResult<RegisterResponseDTO>.FromServiceResult(ServiceResult<RegisterResponseDTO>.Failure(MessageKey.Error_InternalServerErrorService));
+            }
         }
 
         public async Task<HttpServiceResult<LoginResponseDTO>> LoginUserAsync(LoginDTO loginDTO)
@@ -54,7 +63,7 @@ namespace TTT2.Services
             }
             catch
             {
-                return HttpServiceResult<LoginResponseDTO>.FromServiceResult(ServiceResult<LoginResponseDTO>.Failure(MessageKey.Error_InternalServerError));
+                return HttpServiceResult<LoginResponseDTO>.FromServiceResult(ServiceResult<LoginResponseDTO>.Failure(MessageKey.Error_InternalServerErrorService));
             }
         }
         

@@ -24,7 +24,7 @@ namespace TTT2.Services
                 var validateOwnership = await ValidateSceneAudioOwnership(sceneAudioAssignDTO.SceneId, sceneAudioAssignDTO.AudioFileId, userIdResult.Data);
                 if (validateOwnership.IsFailure)
                 {
-                    return HttpServiceResult<SceneAudioAssignResponseDTO>.FromServiceResult(userIdResult.ToFailureResult<SceneAudioAssignResponseDTO>());
+                    return HttpServiceResult<SceneAudioAssignResponseDTO>.FromServiceResult(validateOwnership.ToFailureResult<SceneAudioAssignResponseDTO>());
                 }
 
                 var assignedSceneAudio = await helper.AddSceneAudioFileAsync(sceneAudioAssignDTO);
@@ -57,7 +57,7 @@ namespace TTT2.Services
                     userIdResult.Data);
                 if (validOwnershipResult.IsFailure)
                 {
-                    return HttpServiceResult<bool>.FromServiceResult(userIdResult.ToFailureResult<bool>());
+                    return HttpServiceResult<bool>.FromServiceResult(validOwnershipResult.ToFailureResult<bool>());
                 }
 
                 var removeSceneAudio = await helper.RemoveSceneAudioFileAsync(sceneAudioRemoveDTO);
