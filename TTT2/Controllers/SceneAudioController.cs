@@ -7,6 +7,7 @@ using Shared.Models.DTOs.SceneAudios;
 namespace TTT2.Controllers
 {
     [Authorize]
+    [Route("sceneaudio")]
     [ApiController]
     public class SceneAudioController(ISceneAudioService sceneAudioService) : ControllerBase
     {

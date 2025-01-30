@@ -7,26 +7,20 @@ using System.Net;
 namespace TTT2.Controllers
 {
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    [Route("authentication")]
+    public class AuthenticationController(IAuthenticationService authService) : ControllerBase
     {
-        private readonly IAuthenticationService _authService;
-
-        public AuthenticationController(IAuthenticationService authService)
-        {
-            _authService = authService;
-        }
-
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registrationDTO)
         {
-            var result = await _authService.RegisterUserAsync(registrationDTO);
+            var result = await authService.RegisterUserAsync(registrationDTO);
             return this.ToActionResult(result);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
-            var result = await _authService.LoginUserAsync(loginDTO);
+            var result = await authService.LoginUserAsync(loginDTO);
             return this.ToActionResult(result);
         }
     }

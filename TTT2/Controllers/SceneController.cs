@@ -7,6 +7,7 @@ using Shared.Extensions.Controllers;
 namespace TTT2.Controllers
 {
     [Authorize]
+    [Route("scenes")]
     [ApiController]
     public class SceneController(ISceneService sceneService) : ControllerBase
     {

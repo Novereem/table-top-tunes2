@@ -7,6 +7,7 @@ using Shared.Models.DTOs.AudioFiles;
 namespace TTT2.Controllers
 {
     [Authorize]
+    [Route("audio")]
     [ApiController]
     public class AudioController(IAudioService audioService) : ControllerBase
     {
