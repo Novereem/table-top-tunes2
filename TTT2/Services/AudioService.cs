@@ -29,7 +29,7 @@ public class AudioService(IUserClaimsService userClaimsService, IAudioServiceHel
             var userResult = await authenticationService.GetUserByIdAsync(userIdResult.Data);
             if (userResult.IsFailure || userResult.Data == null)
             {
-                return HttpServiceResult<AudioFileCreateResponseDTO>.FromServiceResult(validationResult.ToFailureResult<AudioFileCreateResponseDTO>());
+                return HttpServiceResult<AudioFileCreateResponseDTO>.FromServiceResult(userResult.ToFailureResult<AudioFileCreateResponseDTO>());
             }
             var createdAudioResult = await helper.CreateAudioFileAsync(audioFileCreateDTO, userResult.Data);
             if (createdAudioResult.IsFailure)

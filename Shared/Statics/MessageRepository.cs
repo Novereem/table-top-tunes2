@@ -29,8 +29,14 @@ namespace Shared.Statics
         { MessageKey.Error_InvalidCredentials, new MessageInfo("E010", "Invalid credentials", "Wrong username and or password, please try again.", MessageType.Error, HttpStatusCode.Unauthorized) },
         { MessageKey.Error_Unauthorized, new MessageInfo("E011", "Not authorized", "Something went wrong, please try to re-log back in.", MessageType.Error, HttpStatusCode.Unauthorized) },
         
+        //Audio
+        { MessageKey.Error_InvalidAudioFile, new MessageInfo("E012", "Invalid audio file.", "The audio file is invalid, please try another file.", MessageType.Error, HttpStatusCode.BadRequest) },
+        { MessageKey.Error_InvalidAudioFileType, new MessageInfo("E013", "Invalid audio file type.", "Only MP3 files are allowed, please try again with a different file type.", MessageType.Error, HttpStatusCode.BadRequest) },
+        { MessageKey.Error_UnableToUploadAudioFile, new MessageInfo("E014", "Unable to upload file.", "Unable to upload the file, please try again later.", MessageType.Error, HttpStatusCode.InternalServerError) },
+        { MessageKey.Error_UnableToSaveAudioFileMetaData, new MessageInfo("E015", "Unable to save audiofile metadata.", "Unable to upload the file, please try again later.", MessageType.Error, HttpStatusCode.InternalServerError) },
+        
         //SceneAudio
-        { MessageKey.Error_SceneAudioAlreadyAdded, new MessageInfo("E012", "Audio already added to scene", "This audio has already been added to the scene.", MessageType.Error, HttpStatusCode.Conflict) },
+        { MessageKey.Error_SceneAudioAlreadyAdded, new MessageInfo("E016", "Audio already added to scene", "This audio has already been added to the scene.", MessageType.Error, HttpStatusCode.Conflict) },
         
         /// Success
         //Standard

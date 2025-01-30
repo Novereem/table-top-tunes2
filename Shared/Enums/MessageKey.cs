@@ -24,6 +24,12 @@ namespace Shared.Enums
         Error_InvalidCredentials,
         Error_Unauthorized,
 
+        //Audio
+        Error_InvalidAudioFile,
+        Error_InvalidAudioFileType,
+        Error_UnableToUploadAudioFile,
+        Error_UnableToSaveAudioFileMetaData,
+        
         //SceneAudio
         Error_SceneAudioAlreadyAdded,
         

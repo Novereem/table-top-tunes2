@@ -10,31 +10,67 @@ namespace TTT2.Services.Helpers
 {
     public class AudioServiceHelper(IAudioData audioData) : IAudioServiceHelper
     {
+        private readonly string _audioFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
         public ServiceResult<object> ValidateAudioFileCreateRequest(AudioFileCreateDTO audioFileCreateDTO)
         {
-            return string.IsNullOrWhiteSpace(audioFileCreateDTO.Name)
-                ? ServiceResult<object>.Failure(MessageKey.Error_InvalidInput)
-                : ServiceResult<object>.SuccessResult();
+             if (string.IsNullOrWhiteSpace(audioFileCreateDTO.Name))
+                 return ServiceResult<object>.Failure(MessageKey.Error_InvalidInput);
+             if (audioFileCreateDTO.AudioFile.Length <= 0)
+                 return ServiceResult<object>.Failure(MessageKey.Error_InvalidAudioFile);
+             return !audioFileCreateDTO.AudioFile.ContentType.Contains("audio/mpeg") ? 
+                 ServiceResult<object>.Failure(MessageKey.Error_InvalidAudioFileType) : 
+                 ServiceResult<object>.SuccessResult();
         }
 
         public async Task<ServiceResult<AudioFileCreateResponseDTO>> CreateAudioFileAsync(AudioFileCreateDTO audioFileCreateDTO, User user)
         {
+            string? filePath = null;
+            
             try
             {
                 var newAudioFile = audioFileCreateDTO.ToAudioFromCreateDTO();
-                newAudioFile.UserId = user.Id;
+                
+                //Saving audio file
+                if (!Directory.Exists(_audioFolderPath))
+                    Directory.CreateDirectory(_audioFolderPath);
+                
+                var userFolderPath = Path.Combine(_audioFolderPath, user.Id.ToString());
+                if (!Directory.Exists(userFolderPath))
+                    Directory.CreateDirectory(userFolderPath);
+            
+                var fileName = $"{newAudioFile.Id}.mp3";
+                filePath = Path.Combine(userFolderPath, Path.GetFileName(fileName));
 
+                try
+                {
+                    await using var stream = new FileStream(filePath, FileMode.Create);
+                    await audioFileCreateDTO.AudioFile.CopyToAsync(stream);
+                }
+                catch
+                {
+                    return ServiceResult<AudioFileCreateResponseDTO>.Failure(MessageKey.Error_UnableToUploadAudioFile);
+                }
+                
+                //Saving metadata to database
+                newAudioFile.UserId = user.Id;
                 var createdAudio = await audioData.SaveAudioFileAsync(newAudioFile);
 
-                return createdAudio.ResultType switch
+                if (createdAudio.ResultType == DataResultType.Success)
                 {
-                    DataResultType.Success => ServiceResult<AudioFileCreateResponseDTO>.SuccessResult(createdAudio.Data!.ToCreateResponseDTO()),
-                    DataResultType.Error => ServiceResult<AudioFileCreateResponseDTO>.Failure(MessageKey.Error_InternalServerErrorData),
-                    _ => ServiceResult<AudioFileCreateResponseDTO>.Failure(MessageKey.Error_InternalServerErrorData)
-                };
+                    return ServiceResult<AudioFileCreateResponseDTO>.SuccessResult(createdAudio.Data!.ToCreateResponseDTO());
+                }
+
+                //Delete file upon failing to save to database.
+                File.Delete(filePath);
+
+                return ServiceResult<AudioFileCreateResponseDTO>.Failure(MessageKey.Error_UnableToSaveAudioFileMetaData);
             }
             catch
             {
+                if (filePath != null && File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
                 return ServiceResult<AudioFileCreateResponseDTO>.Failure(MessageKey.Error_InternalServerErrorService);
             }
         }

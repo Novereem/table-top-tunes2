@@ -9,8 +9,8 @@ public class AudioData : IAudioData
 {
     public async Task<DataResult<AudioFile>> SaveAudioFileAsync(AudioFile audioFile)
     {
-        const string insertQuery = "INSERT INTO AudioFiles (Id, Name, FilePath ,UserId) VALUES (@Id, @Name, @FilePath ,@UserId);";
-        const string selectQuery = "SELECT Id, Name, UserId, FilePath, CreatedAt FROM AudioFiles WHERE Id = @Id;";
+        const string insertQuery = "INSERT INTO AudioFiles (Id, Name ,UserId) VALUES (@Id, @Name ,@UserId);";
+        const string selectQuery = "SELECT Id, Name, UserId, CreatedAt FROM AudioFiles WHERE Id = @Id;";
 
         using var context = new DatabaseContext();
         await context.OpenAsync();
@@ -20,7 +20,6 @@ public class AudioData : IAudioData
             await context.ExecuteNonQueryAsync(insertQuery,
                 new MySqlParameter("@Id", audioFile.Id),
                 new MySqlParameter("@Name", audioFile.Name),
-                new MySqlParameter("@FilePath", audioFile.FilePath),
                 new MySqlParameter("@UserId", audioFile.UserId));
 
             await using var reader = await context.ExecuteQueryAsync(selectQuery, new MySqlParameter("@Id", audioFile.Id));
@@ -31,7 +30,6 @@ public class AudioData : IAudioData
                 {
                     Id = reader.GetGuid("Id"),
                     Name = reader.GetString("Name"),
-                    FilePath = reader.GetString("FilePath"),
                     UserId = reader.GetGuid("UserId"),
                     CreatedAt = reader.GetDateTime("CreatedAt")
                 });
