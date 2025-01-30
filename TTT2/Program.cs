@@ -9,10 +9,12 @@ using Shared.Models.Common;
 using Shared.Statics;
 using System.Text;
 using System.Text.Json;
+using Shared.Interfaces.Services.Helpers.FileValidation;
 using TTT2.Data;
 using TTT2.Services;
 using TTT2.Services.Common.Authentication;
 using TTT2.Services.Helpers;
+using TTT2.Services.Helpers.FileValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,9 +22,11 @@ var builder = WebApplication.CreateBuilder(args);
 DotNetEnv.Env.Load();
 
 //Services Registration
+//Common
 builder.Services.AddScoped<IPasswordHashingService, PasswordHashingService>();
 builder.Services.AddSingleton<IUserClaimsService, UserClaimsService>();
 
+//Standard
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IAuthenticationData, AuthenticationData>();
 builder.Services.AddScoped<ISceneService, SceneService>();
@@ -32,11 +36,15 @@ builder.Services.AddScoped<IAudioData, AudioData>();
 builder.Services.AddScoped<ISceneAudioService, SceneAudioService>();
 builder.Services.AddScoped<ISceneAudioData, SceneAudioData>();
 
-
+//Helpers
 builder.Services.AddScoped<IAuthenticationServiceHelper, AuthenticationServiceHelper>();
 builder.Services.AddScoped<ISceneServiceHelper, SceneServiceHelper>();
 builder.Services.AddScoped<IAudioServiceHelper, AudioServiceHelper>();
 builder.Services.AddScoped<ISceneAudioServiceHelper, SceneAudioServiceHelper>();
+
+//Validators
+builder.Services.AddScoped<IAudioFileValidator, AudioFileValidator>();
+builder.Services.AddScoped<IFileSafetyValidator, FileSafetyValidator>();
 
 // CORS Policy
 builder.Services.AddCors(options =>

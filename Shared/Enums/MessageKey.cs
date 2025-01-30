@@ -15,6 +15,7 @@ namespace Shared.Enums
         Error_NotFound,
         Error_InternalServerErrorService,
         Error_InternalServerErrorData,
+        Error_MalwareOrVirusDetected,
 
         //Authentication
         Error_PasswordTooShort,
@@ -27,6 +28,7 @@ namespace Shared.Enums
         //Audio
         Error_InvalidAudioFile,
         Error_InvalidAudioFileType,
+        Error_FileTooLarge,
         Error_UnableToUploadAudioFile,
         Error_UnableToSaveAudioFileMetaData,
         

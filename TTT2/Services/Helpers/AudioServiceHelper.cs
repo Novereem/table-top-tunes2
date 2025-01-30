@@ -1,25 +1,35 @@
-﻿using Shared.Enums;
+﻿using System.Diagnostics;
+using Shared.Enums;
 using Shared.Interfaces.Data;
 using Shared.Interfaces.Services.Helpers;
+using Shared.Interfaces.Services.Helpers.FileValidation;
 using Shared.Models;
 using Shared.Models.Common;
 using Shared.Models.DTOs.AudioFiles;
 using Shared.Models.Extensions;
+using TTT2.Services.Helpers.FileValidation;
 
 namespace TTT2.Services.Helpers
 {
-    public class AudioServiceHelper(IAudioData audioData) : IAudioServiceHelper
+    public class AudioServiceHelper(IAudioData audioData, IAudioFileValidator audioFileValidator, IFileSafetyValidator fileSafetyValidator) : IAudioServiceHelper
     {
         private readonly string _audioFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+        
         public ServiceResult<object> ValidateAudioFileCreateRequest(AudioFileCreateDTO audioFileCreateDTO)
         {
-             if (string.IsNullOrWhiteSpace(audioFileCreateDTO.Name))
-                 return ServiceResult<object>.Failure(MessageKey.Error_InvalidInput);
-             if (audioFileCreateDTO.AudioFile.Length <= 0)
-                 return ServiceResult<object>.Failure(MessageKey.Error_InvalidAudioFile);
-             return !audioFileCreateDTO.AudioFile.ContentType.Contains("audio/mpeg") ? 
-                 ServiceResult<object>.Failure(MessageKey.Error_InvalidAudioFileType) : 
-                 ServiceResult<object>.SuccessResult();
+            var basicCheck = audioFileValidator.ValidateFileBasics(audioFileCreateDTO);
+            if (!basicCheck.IsSuccess) return basicCheck;
+        
+            var magicCheck = audioFileValidator.ValidateMagicNumber(audioFileCreateDTO.AudioFile);
+            if (!magicCheck.IsSuccess) return magicCheck;
+        
+            var decodeCheck = audioFileValidator.ValidateByDecodingWithFfmpeg(audioFileCreateDTO.AudioFile);
+            if (!decodeCheck.IsSuccess) return decodeCheck;
+
+            var virusCheck = fileSafetyValidator.ScanWithClamAV(audioFileCreateDTO.AudioFile).GetAwaiter().GetResult();
+            if (!virusCheck.IsSuccess) return virusCheck;
+        
+            return ServiceResult<object>.SuccessResult();
         }
 
         public async Task<ServiceResult<AudioFileCreateResponseDTO>> CreateAudioFileAsync(AudioFileCreateDTO audioFileCreateDTO, User user)
@@ -43,8 +53,9 @@ namespace TTT2.Services.Helpers
 
                 try
                 {
-                    await using var stream = new FileStream(filePath, FileMode.Create);
-                    await audioFileCreateDTO.AudioFile.CopyToAsync(stream);
+                    await using var uploadStream = new FileStream(filePath, FileMode.Create);
+                    await using var freshStream = audioFileCreateDTO.AudioFile.OpenReadStream();
+                    await freshStream.CopyToAsync(uploadStream);
                 }
                 catch
                 {

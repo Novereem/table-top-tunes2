@@ -20,6 +20,7 @@ namespace Shared.Statics
         { MessageKey.Error_NotFound, new MessageInfo("E003", "Target not found.", "Target was not found, please try again later.", MessageType.Error, HttpStatusCode.BadRequest) },
         { MessageKey.Error_InternalServerErrorService, new MessageInfo("E004", "An unexpected service error occurred.", "Something went wrong. Please try again later.", MessageType.Error, HttpStatusCode.BadRequest) },
         { MessageKey.Error_InternalServerErrorData, new MessageInfo("E005", "An unexpected data error occurred.", "Something went wrong. Please try again later.", MessageType.Error, HttpStatusCode.BadRequest) },
+        { MessageKey.Error_MalwareOrVirusDetected, new MessageInfo("E999", "Malware or virus detected.", "Malware detected.", MessageType.Error, HttpStatusCode.Forbidden) },
         
         //Authentication
         { MessageKey.Error_PasswordTooShort, new MessageInfo("E006", "Password too short when registering.", "Password is too short, the password has to be atleast 5 characters long.", MessageType.Error, HttpStatusCode.BadRequest) },
@@ -32,11 +33,12 @@ namespace Shared.Statics
         //Audio
         { MessageKey.Error_InvalidAudioFile, new MessageInfo("E012", "Invalid audio file.", "The audio file is invalid, please try another file.", MessageType.Error, HttpStatusCode.BadRequest) },
         { MessageKey.Error_InvalidAudioFileType, new MessageInfo("E013", "Invalid audio file type.", "Only MP3 files are allowed, please try again with a different file type.", MessageType.Error, HttpStatusCode.BadRequest) },
-        { MessageKey.Error_UnableToUploadAudioFile, new MessageInfo("E014", "Unable to upload file.", "Unable to upload the file, please try again later.", MessageType.Error, HttpStatusCode.InternalServerError) },
-        { MessageKey.Error_UnableToSaveAudioFileMetaData, new MessageInfo("E015", "Unable to save audiofile metadata.", "Unable to upload the file, please try again later.", MessageType.Error, HttpStatusCode.InternalServerError) },
+        { MessageKey.Error_FileTooLarge, new MessageInfo("E014", "File size too large", "The maximum file size is 5MB, please try a smaller file.", MessageType.Error, HttpStatusCode.BadRequest) },
+        { MessageKey.Error_UnableToUploadAudioFile, new MessageInfo("E015", "Unable to upload file.", "Unable to upload the file, please try again later.", MessageType.Error, HttpStatusCode.InternalServerError) },
+        { MessageKey.Error_UnableToSaveAudioFileMetaData, new MessageInfo("E016", "Unable to save audiofile metadata.", "Unable to upload the file, please try again later.", MessageType.Error, HttpStatusCode.InternalServerError) },
         
         //SceneAudio
-        { MessageKey.Error_SceneAudioAlreadyAdded, new MessageInfo("E016", "Audio already added to scene", "This audio has already been added to the scene.", MessageType.Error, HttpStatusCode.Conflict) },
+        { MessageKey.Error_SceneAudioAlreadyAdded, new MessageInfo("E017", "Audio already added to scene", "This audio has already been added to the scene.", MessageType.Error, HttpStatusCode.Conflict) },
         
         /// Success
         //Standard
