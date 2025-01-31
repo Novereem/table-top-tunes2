@@ -10,11 +10,13 @@ using Shared.Statics;
 using System.Text;
 using System.Text.Json;
 using Shared.Interfaces.Services.Helpers.FileValidation;
+using Shared.Interfaces.Services.Helpers.Shared;
 using TTT2.Data;
 using TTT2.Services;
 using TTT2.Services.Common.Authentication;
 using TTT2.Services.Helpers;
 using TTT2.Services.Helpers.FileValidation;
+using TTT2.Services.Helpers.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +44,9 @@ builder.Services.AddScoped<IAuthenticationServiceHelper, AuthenticationServiceHe
 builder.Services.AddScoped<ISceneServiceHelper, SceneServiceHelper>();
 builder.Services.AddScoped<IAudioServiceHelper, AudioServiceHelper>();
 builder.Services.AddScoped<ISceneAudioServiceHelper, SceneAudioServiceHelper>();
+
+//Shared helpers
+builder.Services.AddScoped<ISceneValidationService, SceneValidationService>();
 
 //Validators
 builder.Services.AddScoped<IAudioFileValidator, AudioFileValidator>();

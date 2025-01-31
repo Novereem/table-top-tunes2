@@ -43,6 +43,40 @@ namespace TTT2.Data
             }
         }
 
+        public async Task<DataResult<Scene>> GetSceneBySceneIdAsync(Guid sceneId)
+        {
+            const string query = "SELECT Id, Name, UserId, CreatedAt FROM Scenes WHERE Id = @SceneId;";
+
+            using var context = new DatabaseContext();
+
+            try
+            {
+                await context.OpenAsync();
+
+                await using var reader = await context.ExecuteQueryAsync(query, 
+                    new MySqlParameter("@SceneId", sceneId));
+
+                if (await reader.ReadAsync())
+                {
+                    var scene = new Scene
+                    {
+                        Id = reader.GetGuid("Id"),
+                        Name = reader.GetString("Name"),
+                        UserId = reader.GetGuid("UserId"),
+                        CreatedAt = reader.GetDateTime("CreatedAt")
+                    };
+
+                    return DataResult<Scene>.Success(scene);
+                }
+
+                return DataResult<Scene>.NotFound();
+            }
+            catch (Exception ex)
+            {
+                return DataResult<Scene>.Error();
+            }
+        }
+
         public async Task<DataResult<List<Scene>>> GetScenesByUserIdAsync(Guid userId)
         {
             const string query = "SELECT Id, Name, UserId, CreatedAt FROM Scenes WHERE UserId = @UserId;";
@@ -72,6 +106,83 @@ namespace TTT2.Data
             catch
             {
                 return DataResult<List<Scene>>.Error();
+            }
+        }
+        
+        public async Task<DataResult<Scene>> UpdateSceneAsync(Scene scene)
+        {
+            const string updateQuery = @"
+                UPDATE Scenes 
+                SET Name = @Name
+                WHERE Id = @Id AND UserId = @UserId;";
+
+            const string selectQuery = @"
+                SELECT Id, Name, UserId, CreatedAt 
+                FROM Scenes 
+                WHERE Id = @Id;";
+
+            using var context = new DatabaseContext();
+            await context.OpenAsync();
+
+            try
+            {
+                var rowsAffected = await context.ExecuteNonQueryAsync(updateQuery,
+                    new MySqlParameter("@Name", scene.Name),
+                    new MySqlParameter("@Id", scene.Id),
+                    new MySqlParameter("@UserId", scene.UserId));
+
+                if (rowsAffected == 0)
+                {
+                    return DataResult<Scene>.NotFound();
+                }
+
+                await using var reader = await context.ExecuteQueryAsync(selectQuery,
+                    new MySqlParameter("@Id", scene.Id));
+
+                if (await reader.ReadAsync())
+                {
+                    return DataResult<Scene>.Success(new Scene
+                    {
+                        Id = reader.GetGuid("Id"),
+                        Name = reader.GetString("Name"),
+                        UserId = reader.GetGuid("UserId"),
+                        CreatedAt = reader.GetDateTime("CreatedAt"),
+                    });
+                }
+
+                return DataResult<Scene>.Error();
+            }
+            catch
+            {
+                return DataResult<Scene>.Error();
+            }
+        }
+        
+        public async Task<DataResult<bool>> DeleteSceneAsync(Guid sceneId, Guid userId)
+        {
+            const string deleteQuery = @"
+                DELETE FROM Scenes 
+                WHERE Id = @Id AND UserId = @UserId;";
+
+            using var context = new DatabaseContext();
+            await context.OpenAsync();
+
+            try
+            {
+                var rowsAffected = await context.ExecuteNonQueryAsync(deleteQuery,
+                    new MySqlParameter("@Id", sceneId),
+                    new MySqlParameter("@UserId", userId));
+
+                if (rowsAffected > 0)
+                {
+                    return DataResult<bool>.Success(true);
+                }
+
+                return DataResult<bool>.NotFound();
+            }
+            catch
+            {
+                return DataResult<bool>.Error();
             }
         }
         

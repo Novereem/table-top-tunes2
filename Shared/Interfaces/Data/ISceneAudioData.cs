@@ -8,6 +8,7 @@ namespace Shared.Interfaces.Data
     {
         Task<DataResult<SceneAudioFile>> AddSceneAudioFileAsync(SceneAudioFile sceneAudioFile);
         Task<DataResult<bool>> RemoveSceneAudioFileAsync(SceneAudioFile sceneAudioFile);
+        Task<DataResult<bool>> RemoveAllSceneAudioFilesAsync(Guid sceneId);
         Task<DataResult<List<SceneAudioFile>>> GetSceneAudioFilesBySceneIdAsync(Guid sceneId);
     }
 }

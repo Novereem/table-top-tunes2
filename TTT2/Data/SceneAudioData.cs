@@ -101,6 +101,28 @@ namespace TTT2.Data
             }
         }
         
+        public async Task<DataResult<bool>> RemoveAllSceneAudioFilesAsync(Guid sceneId)
+        {
+            const string deleteQuery = @"
+                DELETE FROM SceneAudioFile 
+                WHERE SceneId = @SceneId;";
+
+            using var context = new DatabaseContext();
+            await context.OpenAsync();
+
+            try
+            {
+                var rowsAffected = await context.ExecuteNonQueryAsync(deleteQuery,
+                    new MySqlParameter("@SceneId", sceneId));
+
+                return DataResult<bool>.Success(rowsAffected > 0);
+            }
+            catch
+            {
+                return DataResult<bool>.Error();
+            }
+        }
+        
         public async Task<DataResult<List<SceneAudioFile>>> GetSceneAudioFilesBySceneIdAsync(Guid sceneId)
         {
             const string query = @"

@@ -51,7 +51,26 @@ namespace TTT2.Services.Helpers
                 return ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorService);
             }
         }
-        
+
+        public async Task<ServiceResult<bool>> RemoveAllSceneAudioFilesAsync(SceneAudioRemoveAllDTO sceneAudioRemoveAllDTO)
+        {
+            try
+            {
+                var deleteResult = await sceneAudioData.RemoveAllSceneAudioFilesAsync(sceneAudioRemoveAllDTO.SceneId);
+                return deleteResult.ResultType switch
+                {
+                    DataResultType.Success => ServiceResult<bool>.SuccessResult(true),
+                    DataResultType.NotFound => ServiceResult<bool>.Failure(MessageKey.Error_NotFound),
+                    DataResultType.Error => ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorData),
+                    _ => ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorData)
+                };
+            }
+            catch
+            {
+                return ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorService);
+            }
+        }
+
         public async Task<ServiceResult<List<SceneAudioFile>>> GetSceneAudioFilesAsync(SceneAudioGetDTO sceneAudioGetDTO)
         {
             try

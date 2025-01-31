@@ -24,6 +24,13 @@ namespace TTT2.Controllers
             var result = await sceneAudioService.RemoveAudio(sceneAudioRemoveDTO, User);
             return this.ToActionResult(result);
         }
+        
+        [HttpDelete("remove-all-audio")]
+        public async Task<IActionResult> RemoveAllAudio([FromBody] SceneAudioRemoveAllDTO sceneAudioRemoveAllDTO)
+        {
+            var result = await sceneAudioService.RemoveAllAudioForSceneAsync(sceneAudioRemoveAllDTO, User);
+            return this.ToActionResult(result);
+        }
 
         [HttpGet("get-scene-audio")]
         public async Task<IActionResult> GetSceneAudio([FromBody] SceneAudioGetDTO sceneAudioGetDTO)
