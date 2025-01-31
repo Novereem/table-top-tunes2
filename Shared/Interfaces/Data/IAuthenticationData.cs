@@ -14,5 +14,6 @@ namespace Shared.Interfaces.Data
         Task<DataResult<User>> GetUserByUsernameAsync(string username);
         Task<DataResult<User>> GetUserByEmailAsync(string email);
         Task<DataResult<User>> GetUserByIdAsync(Guid userId);
+        Task<DataResult<User>> UpdateUserAsync(User user);
     }
 }

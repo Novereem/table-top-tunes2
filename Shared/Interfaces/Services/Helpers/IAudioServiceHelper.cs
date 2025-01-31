@@ -6,8 +6,8 @@ namespace Shared.Interfaces.Services.Helpers;
 
 public interface IAudioServiceHelper
 {
-    ServiceResult<object> ValidateAudioFileCreateRequest(AudioFileCreateDTO createDTO);
+    ServiceResult<object> ValidateAudioFileCreateRequest(AudioFileCreateDTO createDTO, User user);
     Task<ServiceResult<AudioFileCreateResponseDTO>> CreateAudioFileAsync(AudioFileCreateDTO audioFileCreateDTO, User user);
-    Task<ServiceResult<bool>> DeleteAudioFileAsync(AudioFileRemoveDTO audioFileRemoveDTO, User user);
+    Task<ServiceResult<long>> DeleteAudioFileAsync(AudioFileRemoveDTO audioFileRemoveDTO, User user);
     Task<ServiceResult<bool>> ValidateAudioFileWithUserAsync(Guid audioId, Guid userId);
 }

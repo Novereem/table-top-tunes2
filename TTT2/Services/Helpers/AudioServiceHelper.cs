@@ -15,9 +15,9 @@ namespace TTT2.Services.Helpers
     {
         private readonly string _audioFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
         
-        public ServiceResult<object> ValidateAudioFileCreateRequest(AudioFileCreateDTO audioFileCreateDTO)
+        public ServiceResult<object> ValidateAudioFileCreateRequest(AudioFileCreateDTO audioFileCreateDTO, User user)
         {
-            var basicCheck = audioFileValidator.ValidateFileBasics(audioFileCreateDTO);
+            var basicCheck = audioFileValidator.ValidateFileBasics(audioFileCreateDTO, user);
             if (!basicCheck.IsSuccess) return basicCheck;
         
             var magicCheck = audioFileValidator.ValidateMagicNumber(audioFileCreateDTO.AudioFile);
@@ -65,6 +65,7 @@ namespace TTT2.Services.Helpers
                 }
                 
                 newAudioFile.UserId = user.Id;
+                newAudioFile.FileSize = audioFileCreateDTO.AudioFile.Length;
                 var createdAudio = await audioData.SaveAudioFileAsync(newAudioFile);
 
                 if (createdAudio.ResultType == DataResultType.Success)
@@ -86,20 +87,20 @@ namespace TTT2.Services.Helpers
             }
         }
 
-        public async Task<ServiceResult<bool>> DeleteAudioFileAsync(AudioFileRemoveDTO audioFileRemoveDTO, User user)
+        public async Task<ServiceResult<long>> DeleteAudioFileAsync(AudioFileRemoveDTO audioFileRemoveDTO, User user)
         {
             try
             {
                 var validateResult = await ValidateAudioFileWithUserAsync(audioFileRemoveDTO.AudioId, user.Id);
                 if (!validateResult.IsSuccess)
                 {
-                    return validateResult.ToFailureResult<bool>();
+                    return validateResult.ToFailureResult<long>();
                 }
                 
                 var removeAudioFromDatabase = await audioData.RemoveAudioFileAsync(audioFileRemoveDTO.AudioId, user.Id);
                 if (removeAudioFromDatabase.ResultType != DataResultType.Success)
                 {
-                    return ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorData);
+                    return ServiceResult<long>.Failure(MessageKey.Error_InternalServerErrorData);
                 }
                 
                 var userFolderPath = Path.Combine(_audioFolderPath, user.Id.ToString());
@@ -111,11 +112,11 @@ namespace TTT2.Services.Helpers
                     File.Delete(filePath);
                 }
 
-                return ServiceResult<bool>.SuccessResult(true);
+                return ServiceResult<long>.SuccessResult(removeAudioFromDatabase.Data);
             }
             catch
             {
-                return ServiceResult<bool>.Failure(MessageKey.Error_InternalServerErrorService);
+                return ServiceResult<long>.Failure(MessageKey.Error_InternalServerErrorService);
             }
         }
         public async Task<ServiceResult<bool>> ValidateAudioFileWithUserAsync(Guid audioId, Guid userId)

@@ -35,6 +35,7 @@ builder.Services.AddScoped<IAudioService, AudioService>();
 builder.Services.AddScoped<IAudioData, AudioData>();
 builder.Services.AddScoped<ISceneAudioService, SceneAudioService>();
 builder.Services.AddScoped<ISceneAudioData, SceneAudioData>();
+builder.Services.AddScoped<IUserStorageService, UserStorageService>();
 
 //Helpers
 builder.Services.AddScoped<IAuthenticationServiceHelper, AuthenticationServiceHelper>();

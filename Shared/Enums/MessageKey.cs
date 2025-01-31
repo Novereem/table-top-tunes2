@@ -24,11 +24,14 @@ namespace Shared.Enums
         Error_JWTNullOrEmpty,
         Error_InvalidCredentials,
         Error_Unauthorized,
+        Error_InvalidOldPassword,
+        Error_UsernameTaken,
 
         //Audio
         Error_InvalidAudioFile,
         Error_InvalidAudioFileType,
         Error_FileTooLarge,
+        Error_ExceedsStorageQuota,
         Error_UnableToUploadAudioFile,
         Error_UnableToSaveAudioFileMetaData,
         
@@ -43,6 +46,7 @@ namespace Shared.Enums
         //Authentication
         Success_Register,
         Success_Login,
+        Success_UpdatedUser,
 
         //Scenes
         Success_SceneCreation,

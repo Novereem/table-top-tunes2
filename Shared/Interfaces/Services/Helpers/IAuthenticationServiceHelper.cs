@@ -15,6 +15,8 @@ namespace Shared.Interfaces.Services.Helpers
         Task<ServiceResult<object>> ValidateRegistrationAsync(RegisterDTO registerDTO);
         Task<ServiceResult<User>> RegisterUserAsync(RegisterDTO registerDTO);
         Task<ServiceResult<User>> GetUserByIdAsync(Guid userId);
+        Task<ServiceResult<bool>> ValidateUserUpdateAsync(UpdateUserDTO updateUserDTO, User user);
+        Task<ServiceResult<User>> UpdateUserAsync(UpdateUserDTO updateUserDTO, User user);
         ServiceResult<string> GenerateJwtToken(User user);
     }
 }

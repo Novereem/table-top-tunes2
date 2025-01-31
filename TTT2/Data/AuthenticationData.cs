@@ -31,7 +31,7 @@ namespace TTT2.Data
 
         public async Task<DataResult<User>> GetUserByUsernameAsync(string username)
         {
-            const string query = "SELECT Id, Username, Email, PasswordHash, CreatedAt FROM Users WHERE Username = @Username;";
+            const string query = "SELECT Id, Username, Email, PasswordHash, UsedStorageBytes, MaxStorageBytes ,CreatedAt FROM Users WHERE Username = @Username;";
             using var context = new DatabaseContext();
 
             try
@@ -47,6 +47,8 @@ namespace TTT2.Data
                         Username = reader.GetString("Username"),
                         Email = reader.GetString("Email"),
                         PasswordHash = reader.GetString("PasswordHash"),
+                        UsedStorageBytes = reader.GetInt64("UsedStorageBytes"),
+                        MaxStorageBytes = reader.GetInt64("MaxStorageBytes"),
                         CreatedAt = reader.GetDateTime("CreatedAt")
                     });
                 }
@@ -61,7 +63,7 @@ namespace TTT2.Data
 
         public async Task<DataResult<User>> GetUserByEmailAsync(string email)
         {
-            const string query = "SELECT Id, Username, Email, PasswordHash, CreatedAt FROM Users WHERE Email = @Email;";
+            const string query = "SELECT Id, Username, Email, PasswordHash, UsedStorageBytes, MaxStorageBytes ,CreatedAt FROM Users WHERE Email = @Email;";
             using var context = new DatabaseContext();
 
             try
@@ -77,6 +79,8 @@ namespace TTT2.Data
                         Username = reader.GetString("Username"),
                         Email = reader.GetString("Email"),
                         PasswordHash = reader.GetString("PasswordHash"),
+                        UsedStorageBytes = reader.GetInt64("UsedStorageBytes"),
+                        MaxStorageBytes = reader.GetInt64("MaxStorageBytes"),
                         CreatedAt = reader.GetDateTime("CreatedAt")
                     });
                 }
@@ -91,7 +95,7 @@ namespace TTT2.Data
 
         public async Task<DataResult<User>> GetUserByIdAsync(Guid userId)
         {
-            const string query = "SELECT Id, Username, Email, PasswordHash, CreatedAt FROM Users WHERE Id = @Id;";
+            const string query = "SELECT Id, Username, Email, PasswordHash, UsedStorageBytes, MaxStorageBytes ,CreatedAt FROM Users WHERE Id = @Id;";
             using var context = new DatabaseContext();
 
             try
@@ -107,10 +111,76 @@ namespace TTT2.Data
                         Username = reader.GetString("Username"),
                         Email = reader.GetString("Email"),
                         PasswordHash = reader.GetString("PasswordHash"),
+                        UsedStorageBytes = reader.GetInt64("UsedStorageBytes"),
+                        MaxStorageBytes = reader.GetInt64("MaxStorageBytes"),
                         CreatedAt = reader.GetDateTime("CreatedAt")
                     });
                 }
 
+                return DataResult<User>.NotFound();
+            }
+            catch
+            {
+                return DataResult<User>.Error();
+            }
+        }
+        
+        public async Task<DataResult<User>> UpdateUserAsync(User user)
+        {
+            const string updateQuery = @"
+                UPDATE Users
+                SET 
+                    Username = @Username, 
+                    Email = @Email, 
+                    PasswordHash = @PasswordHash,
+                    UsedStorageBytes = @UsedStorageBytes,
+                    MaxStorageBytes = @MaxStorageBytes
+                WHERE Id = @Id;
+            ";
+
+            const string selectQuery = @"
+                SELECT Id, Username, Email, PasswordHash, UsedStorageBytes, MaxStorageBytes, CreatedAt
+                FROM Users
+                WHERE Id = @Id;
+            ";
+            
+            using var context = new DatabaseContext();
+
+            try
+            {
+                await context.OpenAsync();
+        
+                var rowsAffected = await context.ExecuteNonQueryAsync(updateQuery,
+                    new MySqlParameter("@Id", user.Id),
+                    new MySqlParameter("@Username", user.Username),
+                    new MySqlParameter("@Email", user.Email),
+                    new MySqlParameter("@PasswordHash", user.PasswordHash),
+                    new MySqlParameter("@UsedStorageBytes", user.UsedStorageBytes),
+                    new MySqlParameter("@MaxStorageBytes", user.MaxStorageBytes)
+                );
+
+                
+                if (rowsAffected <= 0)
+                {
+                    return DataResult<User>.NotFound(); 
+                }
+                
+                await using var reader = await context.ExecuteQueryAsync(selectQuery, new MySqlParameter("@Id", user.Id));
+                if (await reader.ReadAsync())
+                {
+                    var updatedUser = new User
+                    {
+                        Id = reader.GetGuid("Id"),
+                        Username = reader.GetString("Username"),
+                        Email = reader.GetString("Email"),
+                        PasswordHash = reader.GetString("PasswordHash"),
+                        UsedStorageBytes = reader.GetInt64("UsedStorageBytes"),
+                        MaxStorageBytes = reader.GetInt64("MaxStorageBytes"),
+                        CreatedAt = reader.GetDateTime("CreatedAt")
+                    };
+
+                    return DataResult<User>.Success(updatedUser);
+                }
                 return DataResult<User>.NotFound();
             }
             catch
