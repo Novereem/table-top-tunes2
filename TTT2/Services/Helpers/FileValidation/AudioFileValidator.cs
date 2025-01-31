@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Shared.Enums;
 using Shared.Interfaces.Services.Helpers.FileValidation;
+using Shared.Models;
 using Shared.Models.Common;
 using Shared.Models.DTOs.AudioFiles;
 
@@ -10,7 +11,7 @@ namespace TTT2.Services.Helpers.FileValidation
     {
         private const long MaxFileSizeBytes = 5 * 1024 * 1024;
 
-        public ServiceResult<object> ValidateFileBasics(AudioFileCreateDTO dto)
+        public ServiceResult<object> ValidateFileBasics(AudioFileCreateDTO dto, User user)
         {
             var file = dto.AudioFile;
             if (string.IsNullOrWhiteSpace(dto.Name))
@@ -19,7 +20,9 @@ namespace TTT2.Services.Helpers.FileValidation
                 return ServiceResult<object>.Failure(MessageKey.Error_InvalidAudioFile);
             if (file.Length > MaxFileSizeBytes)
                 return ServiceResult<object>.Failure(MessageKey.Error_FileTooLarge);
-
+            if (file.Length + user.UsedStorageBytes > user.MaxStorageBytes)
+                return ServiceResult<object>.Failure(MessageKey.Error_ExceedsStorageQuota);
+            
             var fileExtension = Path.GetExtension(file.FileName);
             if (!string.Equals(fileExtension, ".mp3", StringComparison.OrdinalIgnoreCase))
                 return ServiceResult<object>.Failure(MessageKey.Error_InvalidAudioFileType);

@@ -1,4 +1,5 @@
-﻿using Shared.Enums;
+﻿using System.Security.Claims;
+using Shared.Enums;
 using Shared.Interfaces.Data;
 using Shared.Interfaces.Services;
 using Shared.Interfaces.Services.Common.Authentication;
@@ -10,9 +11,7 @@ using Shared.Models.Extensions;
 
 namespace TTT2.Services
 {
-    public class AuthenticationService(
-        IAuthenticationServiceHelper helper)
-        : IAuthenticationService
+    public class AuthenticationService(IAuthenticationServiceHelper helper, IUserClaimsService userClaimsService): IAuthenticationService
     {
         public async Task<HttpServiceResult<RegisterResponseDTO>> RegisterUserAsync(RegisterDTO registerDTO)
         {
@@ -66,7 +65,46 @@ namespace TTT2.Services
                 return HttpServiceResult<LoginResponseDTO>.FromServiceResult(ServiceResult<LoginResponseDTO>.Failure(MessageKey.Error_InternalServerErrorService));
             }
         }
-        
+
+        public async Task<HttpServiceResult<UpdateUserResponseDTO>> UpdateUserAsync(UpdateUserDTO updateUserDTO, ClaimsPrincipal user)
+        {
+            var userIdResult = userClaimsService.GetUserIdFromClaims(user);
+            if (userIdResult.IsFailure)
+            {
+                return HttpServiceResult<UpdateUserResponseDTO>.FromServiceResult(userIdResult.ToFailureResult<UpdateUserResponseDTO>());
+            }
+            
+            var userResult = await GetUserByIdAsync(userIdResult.Data);
+            if (userResult.IsFailure || userResult.Data == null)
+            {
+                return HttpServiceResult<UpdateUserResponseDTO>.FromServiceResult(userResult.ToFailureResult<UpdateUserResponseDTO>());
+            }
+
+            try
+            {
+                var validateUserUpdate = await helper.ValidateUserUpdateAsync(updateUserDTO, userResult.Data);
+                if (validateUserUpdate.IsFailure)
+                {
+                    return HttpServiceResult<UpdateUserResponseDTO>.FromServiceResult(
+                        validateUserUpdate.ToFailureResult<UpdateUserResponseDTO>());
+                }
+                var updatedUser = await helper.UpdateUserAsync(updateUserDTO, userResult.Data);
+                if (updatedUser.IsFailure)
+                {
+                    return HttpServiceResult<UpdateUserResponseDTO>.FromServiceResult(
+                        updatedUser.ToFailureResult<UpdateUserResponseDTO>());
+                }
+
+                return HttpServiceResult<UpdateUserResponseDTO>.FromServiceResult(
+                    ServiceResult<UpdateUserResponseDTO>.SuccessResult(updatedUser.Data!.ToUpdateUserResponseDTO(),
+                        MessageKey.Success_UpdatedUser));
+            }
+            catch
+            {
+                return HttpServiceResult<UpdateUserResponseDTO>.FromServiceResult(ServiceResult<UpdateUserResponseDTO>.Failure(MessageKey.Error_InternalServerErrorService));
+            }
+        }
+
         public async Task<ServiceResult<User>> GetUserByIdAsync(Guid userId)
         {
             return await helper.GetUserByIdAsync(userId);

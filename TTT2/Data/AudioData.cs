@@ -9,8 +9,8 @@ public class AudioData : IAudioData
 {
     public async Task<DataResult<AudioFile>> SaveAudioFileAsync(AudioFile audioFile)
     {
-        const string insertQuery = "INSERT INTO AudioFiles (Id, Name ,UserId) VALUES (@Id, @Name ,@UserId);";
-        const string selectQuery = "SELECT Id, Name, UserId, CreatedAt FROM AudioFiles WHERE Id = @Id;";
+        const string insertQuery = "INSERT INTO AudioFiles (Id, Name ,UserId, FileSize) VALUES (@Id, @Name ,@UserId, @FileSize);";
+        const string selectQuery = "SELECT Id, Name, UserId, FileSize ,CreatedAt FROM AudioFiles WHERE Id = @Id;";
 
         using var context = new DatabaseContext();
         await context.OpenAsync();
@@ -20,7 +20,8 @@ public class AudioData : IAudioData
             await context.ExecuteNonQueryAsync(insertQuery,
                 new MySqlParameter("@Id", audioFile.Id),
                 new MySqlParameter("@Name", audioFile.Name),
-                new MySqlParameter("@UserId", audioFile.UserId));
+                new MySqlParameter("@UserId", audioFile.UserId),
+                new MySqlParameter("@FileSize", audioFile.FileSize));
 
             await using var reader = await context.ExecuteQueryAsync(selectQuery, new MySqlParameter("@Id", audioFile.Id));
 
@@ -31,6 +32,7 @@ public class AudioData : IAudioData
                     Id = reader.GetGuid("Id"),
                     Name = reader.GetString("Name"),
                     UserId = reader.GetGuid("UserId"),
+                    FileSize = reader.GetInt64("FileSize"),
                     CreatedAt = reader.GetDateTime("CreatedAt")
                 });
             }
@@ -43,26 +45,44 @@ public class AudioData : IAudioData
         }
     }
     
-    public async Task<DataResult<bool>> RemoveAudioFileAsync(Guid audioFileId, Guid userId)
+    public async Task<DataResult<long>> RemoveAudioFileAsync(Guid audioFileId, Guid userId)
     {
-        const string deleteQuery = "DELETE FROM AudioFiles WHERE Id = @AudioFileId AND UserId = @UserId;";
+        const string selectQuery = "SELECT FileSize FROM AudioFiles WHERE Id = @Id AND UserId = @UserId;";
+        const string deleteQuery = "DELETE FROM AudioFiles WHERE Id = @Id AND UserId = @UserId;";
+
         using var context = new DatabaseContext();
-        
+        await context.OpenAsync();
+
         try
         {
-            await context.OpenAsync();
-            var rowsAffected = await context.ExecuteNonQueryAsync(deleteQuery,
-                new MySqlParameter("@AudioFileId", audioFileId),
+            var fileSize = await context.ExecuteScalarAsync<long?>(selectQuery,
+                new MySqlParameter("@Id", audioFileId),
                 new MySqlParameter("@UserId", userId)
             );
 
-            return rowsAffected > 0 ? DataResult<bool>.Success(true) : DataResult<bool>.NotFound();
+            if (fileSize == null)
+            {
+                return DataResult<long>.NotFound();
+            }
+
+            var rowsAffected = await context.ExecuteNonQueryAsync(deleteQuery,
+                new MySqlParameter("@Id", audioFileId),
+                new MySqlParameter("@UserId", userId)
+            );
+
+            if (rowsAffected > 0)
+            {
+                return DataResult<long>.Success(fileSize.Value);
+            }
+
+            return DataResult<long>.Error();
         }
         catch
         {
-            return DataResult<bool>.Error();
+            return DataResult<long>.Error();
         }
     }
+
     
     public async Task<DataResult<bool>> AudioFileBelongsToUserAsync(Guid audioFileId, Guid userId)
     {

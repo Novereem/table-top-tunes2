@@ -11,6 +11,7 @@ namespace Shared.Models
     {
         public string Name { get; set; } = string.Empty;
         public Guid UserId { get; set; }
+        public long FileSize { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }
