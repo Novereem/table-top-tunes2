@@ -54,7 +54,7 @@ namespace TTT2.Services
                 var token = helper.GenerateJwtToken(user);
                 if (token.IsFailure)
                 {
-                    return HttpServiceResult<LoginResponseDTO>.FromServiceResult(validationResult.ToFailureResult<LoginResponseDTO>());
+                    return HttpServiceResult<LoginResponseDTO>.FromServiceResult(token.ToFailureResult<LoginResponseDTO>());
                 }
                 return HttpServiceResult<LoginResponseDTO>.FromServiceResult(
                     ServiceResult<LoginResponseDTO>.SuccessResult(new LoginResponseDTO { Token = token.Data! }, MessageKey.Success_Login)
