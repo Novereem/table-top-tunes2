@@ -50,6 +50,8 @@ namespace Shared.Enums
 
         //Scenes
         Success_SceneCreation,
+        Success_SceneUpdate,
+        Success_SceneRemoval,
         
         //Audio
         Success_AudioCreation,
@@ -58,6 +60,7 @@ namespace Shared.Enums
         //SceneAudio
         Success_SceneAudioAssignment,
         Success_SceneAudioRemoval,
+        Success_AllSceneAudiosRemoval,
         Success_SceneAudioFilesRetrieval,
     }
 }

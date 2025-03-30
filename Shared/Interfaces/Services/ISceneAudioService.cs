@@ -11,5 +11,7 @@ namespace Shared.Interfaces.Services
         Task<HttpServiceResult<bool>> RemoveAudio(SceneAudioRemoveDTO sceneAudioRemoveDTO, ClaimsPrincipal user);
         Task<HttpServiceResult<List<SceneAudioFile>>> GetSceneAudioFilesBySceneIdAsync(
             SceneAudioGetDTO sceneAudioGetDTO, ClaimsPrincipal user);
+        Task<HttpServiceResult<bool>> RemoveAllAudioForSceneAsync(SceneAudioRemoveAllDTO sceneAudioRemoveAllDTO,
+            ClaimsPrincipal user);
     }
 }

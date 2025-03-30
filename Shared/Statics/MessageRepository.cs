@@ -55,6 +55,8 @@ namespace Shared.Statics
 
         //Scenes
         { MessageKey.Success_SceneCreation, new MessageInfo("Created scene succesfully", "Created the scene successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_SceneUpdate, new MessageInfo("Updated scene succesfully", "Updated the scene successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_SceneRemoval, new MessageInfo("Removed scene succesfully", "Removed the scene successfully!", MessageType.Success, HttpStatusCode.OK) },
         
         //Audio
         { MessageKey.Success_AudioCreation, new MessageInfo("Created audio succesfully", "Created the audio successfully!", MessageType.Success, HttpStatusCode.OK) },
@@ -63,6 +65,7 @@ namespace Shared.Statics
         //SceneAudio
         { MessageKey.Success_SceneAudioAssignment, new MessageInfo("Audio assigned to scene succesfully", "Audio assigned to scene successfully!", MessageType.Success, HttpStatusCode.OK) },
         { MessageKey.Success_SceneAudioRemoval, new MessageInfo("Removed audio from scene succesfully", "Removed audio from scene successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_AllSceneAudiosRemoval, new MessageInfo("Removed all audio from scene succesfully", "Removed all audio from scene successfully!", MessageType.Success, HttpStatusCode.OK) },
         { MessageKey.Success_SceneAudioFilesRetrieval, new MessageInfo("Retrieved audio files from scene succesfully", "Retrieved audio files from scene successfully!", MessageType.Success, HttpStatusCode.OK) },
     };
 

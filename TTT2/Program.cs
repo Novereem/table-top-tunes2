@@ -10,11 +10,13 @@ using Shared.Statics;
 using System.Text;
 using System.Text.Json;
 using Shared.Interfaces.Services.Helpers.FileValidation;
+using Shared.Interfaces.Services.Helpers.Shared;
 using TTT2.Data;
 using TTT2.Services;
 using TTT2.Services.Common.Authentication;
 using TTT2.Services.Helpers;
 using TTT2.Services.Helpers.FileValidation;
+using TTT2.Services.Helpers.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +45,9 @@ builder.Services.AddScoped<ISceneServiceHelper, SceneServiceHelper>();
 builder.Services.AddScoped<IAudioServiceHelper, AudioServiceHelper>();
 builder.Services.AddScoped<ISceneAudioServiceHelper, SceneAudioServiceHelper>();
 
+//Shared helpers
+builder.Services.AddScoped<ISceneValidationService, SceneValidationService>();
+
 //Validators
 builder.Services.AddScoped<IAudioFileValidator, AudioFileValidator>();
 builder.Services.AddScoped<IFileSafetyValidator, FileSafetyValidator>();
@@ -52,7 +57,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("https://localhost:7040")
+        policy.WithOrigins("http://localhost:5173")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
@@ -122,9 +127,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseRouting();
+
+app.UseCors("AllowFrontend");
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 

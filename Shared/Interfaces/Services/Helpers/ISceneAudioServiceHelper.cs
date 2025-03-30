@@ -8,6 +8,7 @@ namespace Shared.Interfaces.Services.Helpers
     {
         Task<ServiceResult<SceneAudioAssignResponseDTO>> AddSceneAudioFileAsync(SceneAudioAssignDTO sceneAudioAssignDTO);
         Task<ServiceResult<bool>> RemoveSceneAudioFileAsync(SceneAudioRemoveDTO sceneAudioRemoveDTO);
+        Task<ServiceResult<bool>> RemoveAllSceneAudioFilesAsync(SceneAudioRemoveAllDTO sceneAudioRemoveAllDTO);
         Task<ServiceResult<List<SceneAudioFile>>> GetSceneAudioFilesAsync(SceneAudioGetDTO sceneAudioGetDTO);
     }
 }
