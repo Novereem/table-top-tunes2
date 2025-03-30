@@ -6,7 +6,6 @@ using Shared.Models.DTOs.Scenes;
 using System.Security.Claims;
 using Shared.Interfaces.Services.Common.Authentication;
 using Shared.Interfaces.Services.Helpers.Shared;
-using Shared.Models;
 using IAuthenticationService = Shared.Interfaces.Services.IAuthenticationService;
 using Shared.Models.Extensions;
 
