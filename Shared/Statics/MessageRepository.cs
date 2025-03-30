@@ -24,7 +24,7 @@ namespace Shared.Statics
         
         //Authentication
         { MessageKey.Error_PasswordTooShort, new MessageInfo("Password too short when registering.", "Password is too short, the password has to be atleast 5 characters long.", MessageType.Error, HttpStatusCode.BadRequest) },
-        { MessageKey.Error_EmailTaken, new MessageInfo("Email taken.", "This email has already been taken, please try again with a different email.", MessageType.Error, HttpStatusCode.BadRequest) },
+        { MessageKey.Error_EmailTaken, new MessageInfo("Email taken.", "This email has already been taken, please try again with a different email.", MessageType.Error, HttpStatusCode.Conflict) },
         { MessageKey.Error_InvalidEmail, new MessageInfo("Invalid email", "Please provide a valid email.", MessageType.Error, HttpStatusCode.BadRequest) },
         { MessageKey.Error_JWTNullOrEmpty, new MessageInfo("JWT secret key is null.", "Something went wrong. Please try again.", MessageType.Error, HttpStatusCode.InternalServerError) },
         { MessageKey.Error_InvalidCredentials, new MessageInfo("Invalid credentials", "Wrong username and or password, please try again.", MessageType.Error, HttpStatusCode.Unauthorized) },
@@ -50,7 +50,7 @@ namespace Shared.Statics
 
         //Authentication
         { MessageKey.Success_Login, new MessageInfo("Login successful", "Logged in successfully!", MessageType.Success, HttpStatusCode.OK) },
-        { MessageKey.Success_Register, new MessageInfo("Register successful", "Registered successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_Register, new MessageInfo("Register successful", "Registered successfully!", MessageType.Success, HttpStatusCode.Created) },
         { MessageKey.Success_UpdatedUser, new MessageInfo("Updated user successfully", "Updated user successfully!", MessageType.Success, HttpStatusCode.OK) },
 
         //Scenes
