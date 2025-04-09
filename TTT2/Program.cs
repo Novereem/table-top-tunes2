@@ -105,6 +105,7 @@ builder.Services.AddAuthentication(options =>
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 context.Response.ContentType = "application/json";
 
+
                 return context.Response.WriteAsync(jsonResponse);
             }
 
@@ -133,8 +134,8 @@ app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

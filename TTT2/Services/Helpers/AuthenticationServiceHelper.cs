@@ -227,7 +227,7 @@ namespace TTT2.Services.Helpers
                     issuer: Environment.GetEnvironmentVariable("JWT_ISSUER"),
                     audience: Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(1440),
+                    expires: DateTime.UtcNow.AddMinutes(1440),
                     signingCredentials: creds
                 );
 

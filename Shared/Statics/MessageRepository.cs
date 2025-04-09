@@ -54,12 +54,12 @@ namespace Shared.Statics
         { MessageKey.Success_UpdatedUser, new MessageInfo("Updated user successfully", "Updated user successfully!", MessageType.Success, HttpStatusCode.OK) },
 
         //Scenes
-        { MessageKey.Success_SceneCreation, new MessageInfo("Created scene succesfully", "Created the scene successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_SceneCreation, new MessageInfo("Created scene succesfully", "Created the scene successfully!", MessageType.Success, HttpStatusCode.Created) },
         { MessageKey.Success_SceneUpdate, new MessageInfo("Updated scene succesfully", "Updated the scene successfully!", MessageType.Success, HttpStatusCode.OK) },
         { MessageKey.Success_SceneRemoval, new MessageInfo("Removed scene succesfully", "Removed the scene successfully!", MessageType.Success, HttpStatusCode.OK) },
         
         //Audio
-        { MessageKey.Success_AudioCreation, new MessageInfo("Created audio succesfully", "Created the audio successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_AudioCreation, new MessageInfo("Created audio succesfully", "Created the audio successfully!", MessageType.Success, HttpStatusCode.Created) },
         { MessageKey.Success_AudioRemoval, new MessageInfo("Removed audio succesfully", "Removed the audio successfully!", MessageType.Success, HttpStatusCode.OK) },
         
         //SceneAudio

@@ -8,14 +8,10 @@ using TTT2.Tests.Factories;
 
 namespace TTT2.Tests.Endpoint
 {
-    public class AuthenticationEndpointTests : IClassFixture<CustomWebApplicationFactory>
+    public class AuthenticationController(CustomWebApplicationFactory factory)
+        : IClassFixture<CustomWebApplicationFactory>
     {
-        private readonly HttpClient _client;
-
-        public AuthenticationEndpointTests(CustomWebApplicationFactory factory)
-        {
-            _client = factory.CreateClient();
-        }
+        private readonly HttpClient _client = factory.CreateClient();
 
         [Fact]
         public async Task RegisterUser_WithValidData_ShouldReturnCreated()
