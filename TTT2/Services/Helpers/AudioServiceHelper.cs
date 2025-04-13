@@ -26,7 +26,7 @@ namespace TTT2.Services.Helpers
             var decodeCheck = audioFileValidator.ValidateByDecodingWithFfmpeg(audioFileCreateDTO.AudioFile);
             if (!decodeCheck.IsSuccess) return decodeCheck;
 
-            var isDevelopment = bool.TryParse(Environment.GetEnvironmentVariable("DEVELOPMENT"), out var devMode) && devMode;
+            var isDevelopment = bool.TryParse(Environment.GetEnvironmentVariable("DISABLE_CLAMAV"), out var devMode) && devMode;
             if (isDevelopment) return ServiceResult<object>.SuccessResult();
             var virusCheck = fileSafetyValidator.ScanWithClamAV(audioFileCreateDTO.AudioFile).GetAwaiter().GetResult();
             if (!virusCheck.IsSuccess) return virusCheck;

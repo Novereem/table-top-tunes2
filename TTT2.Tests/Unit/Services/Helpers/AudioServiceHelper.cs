@@ -162,8 +162,8 @@ public class AudioServiceHelperTests : IDisposable
         var dto = CreateDummyAudioFileCreateDTO("test.mp3", "Test Audio", new byte[1024]);
         var user = CreateDummyUser();
 
-        // Set environment variable so DEVELOPMENT is true.
-        Environment.SetEnvironmentVariable("DEVELOPMENT", "true");
+        // Set environment variable so DISABLE_CLAMAV is true.
+        Environment.SetEnvironmentVariable("DISABLE_CLAMAV", "true");
 
         _audioFileValidatorMock
             .Setup(x => x.ValidateFileBasics(dto, user))
@@ -179,7 +179,7 @@ public class AudioServiceHelperTests : IDisposable
         var result = _helper.ValidateAudioFileCreateRequest(dto, user);
 
         // Clean up environment variable.
-        Environment.SetEnvironmentVariable("DEVELOPMENT", null);
+        Environment.SetEnvironmentVariable("DISABLE_CLAMAV", null);
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -192,8 +192,8 @@ public class AudioServiceHelperTests : IDisposable
         var dto = CreateDummyAudioFileCreateDTO("test.mp3", "Test Audio", new byte[1024]);
         var user = CreateDummyUser();
 
-        // Set DEVELOPMENT to false.
-        Environment.SetEnvironmentVariable("DEVELOPMENT", "false");
+        // Set DISABLE_CLAMAV to false.
+        Environment.SetEnvironmentVariable("DISABLE_CLAMAV", "false");
 
         _audioFileValidatorMock
             .Setup(x => x.ValidateFileBasics(dto, user))
@@ -213,7 +213,7 @@ public class AudioServiceHelperTests : IDisposable
         // Act
         var result = _helper.ValidateAudioFileCreateRequest(dto, user);
 
-        Environment.SetEnvironmentVariable("DEVELOPMENT", null);
+        Environment.SetEnvironmentVariable("DISABLE_CLAMAV", null);
 
         // Assert
         Assert.False(result.IsSuccess);
@@ -228,7 +228,7 @@ public class AudioServiceHelperTests : IDisposable
         var dto = CreateDummyAudioFileCreateDTO("test.mp3", "Test Audio", new byte[1024]);
         var user = CreateDummyUser();
 
-        Environment.SetEnvironmentVariable("DEVELOPMENT", "false");
+        Environment.SetEnvironmentVariable("DISABLE_CLAMAV", "false");
 
         _audioFileValidatorMock
             .Setup(x => x.ValidateFileBasics(dto, user))
@@ -246,7 +246,7 @@ public class AudioServiceHelperTests : IDisposable
         // Act
         var result = _helper.ValidateAudioFileCreateRequest(dto, user);
 
-        Environment.SetEnvironmentVariable("DEVELOPMENT", null);
+        Environment.SetEnvironmentVariable("DISABLE_CLAMAV", null);
 
         // Assert
         Assert.True(result.IsSuccess);

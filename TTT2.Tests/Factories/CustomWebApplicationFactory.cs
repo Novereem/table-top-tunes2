@@ -23,6 +23,7 @@ namespace TTT2.Tests.Factories
             Environment.SetEnvironmentVariable("JWT_ISSUER", "test-issuer");
             Environment.SetEnvironmentVariable("JWT_AUDIENCE", "test-audience");
             Environment.SetEnvironmentVariable("DEVELOPMENT", "True");
+            Environment.SetEnvironmentVariable("DISABLE_CLAMAV", "True");
             Environment.SetEnvironmentVariable("DB_CONNECTION_STRING", "Server=localhost;Port=3306;Database=tttdatabase;User=root;Password=testpassword");
             
 
