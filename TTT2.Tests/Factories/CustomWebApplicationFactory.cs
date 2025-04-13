@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
+using Shared.Interfaces.Controllers;
 using Shared.Interfaces.Data;
 using Shared.Interfaces.Services;
+using Shared.Services.Converters;
 using TTT2.Tests.Endpoint;
 using TTT2.Tests.FakeData;
 
@@ -33,8 +35,14 @@ namespace TTT2.Tests.Factories
                 }
                 
                 // Register singletons
+                //Fake Data
                 services.AddSingleton<IAuthenticationData, FakeAuthData>();
                 services.AddSingleton<IAudioData, FakeAudioData>();
+                services.AddSingleton<ISceneData, FakeSceneData>();
+                services.AddSingleton<ISceneAudioData, FakeSceneAudioData>();
+                
+                //Debug Responses
+                services.AddScoped<IHttpResponseConverter, DebugHttpResponseConverter>();
             });
 
             return base.CreateHost(builder);

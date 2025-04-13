@@ -12,7 +12,6 @@ public class FakeAudioData : IAudioData
 
     public Task<DataResult<AudioFile>> SaveAudioFileAsync(AudioFile audioFile)
     {
-        // Set the creation time.
         audioFile.CreatedAt = DateTime.UtcNow;
         _audioFiles[audioFile.Id] = audioFile;
         return Task.FromResult(DataResult<AudioFile>.Success(audioFile));

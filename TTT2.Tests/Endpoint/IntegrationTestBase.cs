@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using FluentAssertions;
 using Shared.Models.Common;
 using Shared.Models.DTOs.AudioFiles;
@@ -10,25 +11,19 @@ using TTT2.Tests.Factories;
 
 namespace TTT2.Tests.Endpoint
 {
-    public abstract class IntegrationTestBase : IClassFixture<CustomWebApplicationFactory>
+    public abstract class IntegrationTestBase(CustomWebApplicationFactory factory)
+        : IClassFixture<CustomWebApplicationFactory>
     {
-        protected readonly HttpClient _client;
-        protected readonly CustomWebApplicationFactory _factory;
+        protected readonly HttpClient _client = factory.CreateClient();
 
-        public IntegrationTestBase(CustomWebApplicationFactory factory)
-        {
-            _factory = factory;
-            _client = factory.CreateClient();
-        }
-        
         protected async Task<string> RegisterAndLoginAsync(string username, string email, string password)
         {
             // Register a new user.
             var registrationDto = new
             {
-                username = username,
-                email = email,
-                password = password
+                username,
+                email,
+                password
             };
             var registerResponse = await _client.PostAsJsonAsync("/authentication/register", registrationDto);
             registerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -36,8 +31,7 @@ namespace TTT2.Tests.Endpoint
             // Log in with the registered user.
             var loginDto = new
             {
-                username = username,
-                password = password
+                username, password
             };
             var loginResponse = await _client.PostAsJsonAsync("/authentication/login", loginDto);
             loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -52,6 +46,25 @@ namespace TTT2.Tests.Endpoint
         protected void SetAuthorizationHeader(string token)
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+        
+        protected static async Task<string?> ExtractInternalErrorAsync(HttpResponseMessage response)
+        {
+            var rawJson = await response.Content.ReadAsStringAsync();
+            string? internalError = null;
+            try
+            {
+                using var document = JsonDocument.Parse(rawJson);
+                if (document.RootElement.TryGetProperty("internalMessage", out var internalMessageProp))
+                {
+                    internalError = internalMessageProp.GetString();
+                }
+            }
+            catch
+            {
+                internalError = "Unable to parse raw JSON response.";
+            }
+            return internalError;
         }
     }
 }

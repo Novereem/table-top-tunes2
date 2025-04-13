@@ -4,7 +4,6 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using Shared.Models.Common;
 using Shared.Models.DTOs.AudioFiles;
-using Shared.Models.DTOs.Authentication;
 using TTT2.Tests.Factories;
 
 namespace TTT2.Tests.Endpoint;
@@ -15,9 +14,9 @@ public class AudioController(CustomWebApplicationFactory factory) : IntegrationT
     public async Task CreateAudio_WithValidToken_ShouldReturnSuccess()
     {
         // Arrange: Obtain a valid token.
-        var username = "testuser";
-        var email = "testuser@example.com";
-        var password = "TestPassword123!";
+        const string username = "testuser";
+        const string email = "testuser@example.com";
+        const string password = "TestPassword123!";
         var token = await RegisterAndLoginAsync(username, email, password);
         SetAuthorizationHeader(token);
 
@@ -44,7 +43,9 @@ public class AudioController(CustomWebApplicationFactory factory) : IntegrationT
         var createResponse = await _client.PostAsync("/audio/create-audio", formData);
         
         // Assert: Expect the response to indicate the audio was created.
-        createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+        var internalError = await ExtractInternalErrorAsync(createResponse);
+        createResponse.StatusCode.Should().Be(HttpStatusCode.Created,
+            $"Request failed. Raw response: {await createResponse.Content.ReadAsStringAsync()} | Internal Error: {internalError}");
         var audioApiResponse = await createResponse.Content.ReadFromJsonAsync<ApiResponse<AudioFileCreateResponseDTO>>();
         audioApiResponse.Should().NotBeNull();
         audioApiResponse!.Data.Should().NotBeNull();
@@ -55,9 +56,9 @@ public class AudioController(CustomWebApplicationFactory factory) : IntegrationT
     public async Task RemoveAudio_ShouldReturnOkAndDeleteAudio()
     {
         // Arrange: Register and log in a new user.
-        var username = "removeaudiouser";
-        var email = "removeaudiouser@example.com";
-        var password = "TestPassword123!";
+        const string username = "removeaudiouser";
+        const string email = "removeaudiouser@example.com";
+        const string password = "TestPassword123!";
         var token = await RegisterAndLoginAsync(username, email, password);
         SetAuthorizationHeader(token);
 
@@ -99,7 +100,9 @@ public class AudioController(CustomWebApplicationFactory factory) : IntegrationT
         var removeResponse = await _client.SendAsync(request);
 
         // Assert: Expect HTTP 200 OK and a success indicator.
-        removeResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var internalErrorRemove = await ExtractInternalErrorAsync(removeResponse);
+        removeResponse.StatusCode.Should().Be(HttpStatusCode.OK,
+            $"Request failed. Raw response: {await removeResponse.Content.ReadAsStringAsync()} | Internal Error: {internalErrorRemove}");
         var removeApiResponse = await removeResponse.Content.ReadFromJsonAsync<ApiResponse<bool>>();
         removeApiResponse.Should().NotBeNull();
         removeApiResponse.Data.Should().BeTrue();

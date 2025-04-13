@@ -9,8 +9,10 @@ using Shared.Models.Common;
 using Shared.Statics;
 using System.Text;
 using System.Text.Json;
+using Shared.Interfaces.Controllers;
 using Shared.Interfaces.Services.Helpers.FileValidation;
 using Shared.Interfaces.Services.Helpers.Shared;
+using Shared.Services.Converters;
 using TTT2.Data;
 using TTT2.Services;
 using TTT2.Services.Common.Authentication;
@@ -47,6 +49,9 @@ builder.Services.AddScoped<ISceneAudioServiceHelper, SceneAudioServiceHelper>();
 
 //Shared helpers
 builder.Services.AddScoped<ISceneValidationService, SceneValidationService>();
+
+//Shared
+builder.Services.AddScoped<IHttpResponseConverter, ProductionHttpResponseConverter>();
 
 //Validators
 builder.Services.AddScoped<IAudioFileValidator, AudioFileValidator>();
