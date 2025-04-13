@@ -24,6 +24,10 @@ namespace TTT2.Services.Helpers.FileValidation
                 return ServiceResult<object>.Failure(MessageKey.Error_ExceedsStorageQuota);
             
             var fileExtension = Path.GetExtension(file.FileName);
+            Console.WriteLine(".....File Extension.....");
+            Console.WriteLine(fileExtension);
+            Console.WriteLine(file.FileName);
+            Console.WriteLine("^^^^^File Extension^^^^^");
             if (!string.Equals(fileExtension, ".mp3", StringComparison.OrdinalIgnoreCase))
                 return ServiceResult<object>.Failure(MessageKey.Error_InvalidAudioFileType);
 
