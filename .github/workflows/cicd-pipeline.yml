@@ -40,6 +40,11 @@ jobs:
 
       - name: Ping clamd using Unix socket
         run: echo PING | nc -U /tmp/clamd.socket
+        
+        - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
 
       - name: Clean the project
         run: dotnet clean
