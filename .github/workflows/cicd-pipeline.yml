@@ -1,0 +1,54 @@
+name: TableTopTunes CI Pipeline
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      USE_IN_MEMORY: "true"
+      DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+      JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
+      DEVELOPMENT: "false"
+      DISABLE_CLAMAV: "false"
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install ClamAV
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clamav clamav-daemon
+          sudo freshclam
+          sudo systemctl start clamav-daemon
+          sudo systemctl status clamav-daemon --no-pager
+
+      - name: Clean the project
+        run: dotnet clean
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build --framework net8.0 --verbosity normal
+
+      - name: Start ASP.NET Core app
+        run: |
+          nohup dotnet run --configuration Release --project ./TTTBackend/TTTBackend.csproj --urls "https://localhost:7041" &
+          sleep 10
