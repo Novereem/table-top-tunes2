@@ -205,31 +205,39 @@ namespace TTT2.Services.Helpers
 
         public ServiceResult<string> GenerateJwtToken(User user)
         {
-            var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
-            if (string.IsNullOrEmpty(secretKey))
+            try
+            {
+                var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+                if (string.IsNullOrEmpty(secretKey))
+                {
+                    return ServiceResult<string>.Failure(MessageKey.Error_JWTNullOrEmpty);
+                }
+
+                var claims = new[]
+                {
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                };
+
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                var token = new JwtSecurityToken(
+                    issuer: Environment.GetEnvironmentVariable("JWT_ISSUER"),
+                    audience: Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddMinutes(1440),
+                    signingCredentials: creds
+                );
+
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+                return ServiceResult<string>.SuccessResult(tokenString);
+            }
+            catch
             {
                 return ServiceResult<string>.Failure(MessageKey.Error_JWTNullOrEmpty);
             }
-
-            var claims = new[]
-            {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: Environment.GetEnvironmentVariable("JWT_ISSUER"),
-                audience: Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(1440),
-                signingCredentials: creds
-            );
-
-            return ServiceResult<string>.SuccessResult(new JwtSecurityTokenHandler().WriteToken(token));
         }
     }
 }
