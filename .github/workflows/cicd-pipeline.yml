@@ -28,13 +28,18 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Install ClamAV
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clamav clamav-daemon
-          sudo freshclam
-          sudo systemctl start clamav-daemon
-          sudo systemctl status clamav-daemon --no-pager
+      - name: Start ClamAV daemon clamd
+        uses: toblux/start-clamd-github-action@v0.2.1
+        with:
+          unix_socket: /tmp/clamd.socket
+          tcp_port: 3310
+          stream_max_length: "1M"
+
+      - name: Ping clamd on TCP port 3310
+        run: echo PING | nc localhost 3310
+
+      - name: Ping clamd using Unix socket
+        run: echo PING | nc -U /tmp/clamd.socket
 
       - name: Clean the project
         run: dotnet clean
