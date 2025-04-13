@@ -41,12 +41,23 @@ namespace TTT2.Services.Helpers.FileValidation
                 using var readStream = audioFile.OpenReadStream();
                 var buffer = new byte[3];
                 var bytesRead = readStream.Read(buffer, 0, buffer.Length);
+                Console.WriteLine(".....bytesRead.....");
+                Console.WriteLine(bytesRead);
+                Console.WriteLine("^^^^^bytesRead^^^^^");
                 if (bytesRead < 3) return ServiceResult<object>.Failure(MessageKey.Error_InvalidAudioFileType);
+                Console.WriteLine(".....Whatever this is.....");
+                Console.WriteLine(buffer[0]);
+                Console.WriteLine(buffer[1]);
+                Console.WriteLine(buffer[2]);
+                Console.WriteLine("^^^^^Whatever this is^^^^^");
                 if (buffer[0] != 'I' || buffer[1] != 'D' || buffer[2] != '3')
                     return ServiceResult<object>.Failure(MessageKey.Error_InvalidAudioFileType);
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine("^^^^^Error Catch^^^^^");
+                Console.WriteLine(e);
+                Console.WriteLine("^^^^^Error Catch^^^^^");
                 return ServiceResult<object>.Failure(MessageKey.Error_InvalidAudioFileType);
             }
 
