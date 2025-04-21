@@ -43,6 +43,10 @@ namespace Shared.Statics
         //SceneAudio
         { MessageKey.Error_SceneAudioAlreadyAdded, new MessageInfo("Audio already added to scene", "This audio has already been added to the scene.", MessageType.Error, HttpStatusCode.Conflict) },
         
+        //AudioStreaming
+        { MessageKey.Error_StreamingAudioFileNotFound, new MessageInfo("Audio file provided not found", "An error occured retrieving the audio file, please try again later.", MessageType.Error, HttpStatusCode.Unauthorized) },
+        { MessageKey.Error_StreamRangeNotSatisfiable, new MessageInfo("Stream Range was not satisfiable", "An error occured retrieving the audio file, please try again later.", MessageType.Error, HttpStatusCode.RequestedRangeNotSatisfiable) },
+        
         /// Success
         //Standard
         { MessageKey.Success_OperationCompleted, new MessageInfo("Operation completed successfully!", "Operation successful.", MessageType.Success, HttpStatusCode.OK) },
@@ -66,7 +70,7 @@ namespace Shared.Statics
         { MessageKey.Success_SceneAudioAssignment, new MessageInfo("Audio assigned to scene succesfully", "Audio assigned to scene successfully!", MessageType.Success, HttpStatusCode.OK) },
         { MessageKey.Success_SceneAudioRemoval, new MessageInfo("Removed audio from scene succesfully", "Removed audio from scene successfully!", MessageType.Success, HttpStatusCode.OK) },
         { MessageKey.Success_AllSceneAudiosRemoval, new MessageInfo("Removed all audio from scene succesfully", "Removed all audio from scene successfully!", MessageType.Success, HttpStatusCode.OK) },
-        { MessageKey.Success_SceneAudioFilesRetrieval, new MessageInfo("Retrieved audio files from scene succesfully", "Retrieved audio files from scene successfully!", MessageType.Success, HttpStatusCode.OK) },
+        { MessageKey.Success_SceneAudioFilesRetrieval, new MessageInfo("Retrieved audio files from scene succesfully", "Retrieved audio files from scene successfully!", MessageType.Success, HttpStatusCode.OK) }
     };
 
         public static MessageInfo GetMessage(MessageKey key)

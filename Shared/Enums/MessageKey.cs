@@ -62,5 +62,9 @@ namespace Shared.Enums
         Success_SceneAudioRemoval,
         Success_AllSceneAudiosRemoval,
         Success_SceneAudioFilesRetrieval,
+        
+        //AudioStreaming
+        Error_StreamingAudioFileNotFound,
+        Error_StreamRangeNotSatisfiable,
     }
 }

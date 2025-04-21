@@ -5,7 +5,6 @@ using Shared.Interfaces.Services.Common.Authentication;
 using Shared.Interfaces.Services.Helpers;
 using Shared.Models.Common;
 using Shared.Models.DTOs.AudioFiles;
-using Shared.Models.DTOs.Authentication;
 
 namespace TTT2.Services;
 
