@@ -60,7 +60,6 @@ public class AudioServiceTests
     // Helper: Create a dummy AudioFileCreateDTO.
     private AudioFileCreateDTO CreateDummyAudioFileCreateDTO(int fileLength = 100)
     {
-        // We don't really need a full IFormFile for these tests; assume Length property is used.
         var dummyFile = new Mock<Microsoft.AspNetCore.Http.IFormFile>();
         dummyFile.Setup(f => f.Length).Returns(fileLength);
         return new AudioFileCreateDTO { AudioFile = dummyFile.Object, Name = "Test Audio" };
@@ -192,10 +191,6 @@ public class AudioServiceTests
 
         // Assert
         Assert.False(result.IsSuccess);
-        // Here we expect the failure to be propagated from the helper validation branch.
-        var expected = MessageRepository.GetMessage(MessageKey.Error_InvalidInput); // or another error key as per your code logic.
-        // In our service code, if creation fails, it returns validationResult.ToFailureResult.
-        // You may adjust this expected message according to your implementation.
     }
 
     [Fact]

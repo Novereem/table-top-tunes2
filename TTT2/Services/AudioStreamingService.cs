@@ -10,8 +10,6 @@ namespace TTT2.Services
 {
     public class AudioStreamingService(IUserClaimsService userClaimsService, IAudioStreamingServiceHelper helper) : IAudioStreamingService
     {
-        private readonly string _uploadsRoot = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-
         public async Task<HttpServiceResult<AudioStreamResponseDTO>> StreamAudioAsync(AudioStreamDTO audioStreamDTO, ClaimsPrincipal user, string? rangeHeader)
         {
             //Validate User
