@@ -30,22 +30,26 @@ DotNetEnv.Env.Load();
 builder.Services.AddScoped<IPasswordHashingService, PasswordHashingService>();
 builder.Services.AddSingleton<IUserClaimsService, UserClaimsService>();
 
-//Standard
+//Standard Services
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<IAuthenticationData, AuthenticationData>();
 builder.Services.AddScoped<ISceneService, SceneService>();
-builder.Services.AddScoped<ISceneData, SceneData>();
 builder.Services.AddScoped<IAudioService, AudioService>();
-builder.Services.AddScoped<IAudioData, AudioData>();
 builder.Services.AddScoped<ISceneAudioService, SceneAudioService>();
-builder.Services.AddScoped<ISceneAudioData, SceneAudioData>();
 builder.Services.AddScoped<IUserStorageService, UserStorageService>();
+builder.Services.AddScoped<IAudioStreamingService, AudioStreamingService>();
+
+//Standard Data
+builder.Services.AddScoped<IAuthenticationData, AuthenticationData>();
+builder.Services.AddScoped<ISceneData, SceneData>();
+builder.Services.AddScoped<IAudioData, AudioData>();
+builder.Services.AddScoped<ISceneAudioData, SceneAudioData>();
 
 //Helpers
 builder.Services.AddScoped<IAuthenticationServiceHelper, AuthenticationServiceHelper>();
 builder.Services.AddScoped<ISceneServiceHelper, SceneServiceHelper>();
 builder.Services.AddScoped<IAudioServiceHelper, AudioServiceHelper>();
 builder.Services.AddScoped<ISceneAudioServiceHelper, SceneAudioServiceHelper>();
+builder.Services.AddScoped<IAudioStreamingServiceHelper, AudioStreamingServiceHelper>();
 
 //Shared helpers
 builder.Services.AddScoped<ISceneValidationService, SceneValidationService>();
