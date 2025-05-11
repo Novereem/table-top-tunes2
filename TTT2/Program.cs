@@ -55,7 +55,26 @@ builder.Services.AddScoped<IAudioStreamingServiceHelper, AudioStreamingServiceHe
 builder.Services.AddScoped<ISceneValidationService, SceneValidationService>();
 
 //Shared
-builder.Services.AddScoped<IHttpResponseConverter, ProductionHttpResponseConverter>();
+var isDevelopment = bool.TryParse(Environment.GetEnvironmentVariable("DEVELOPMENT"), out var devMode) && devMode;
+if (isDevelopment)
+{
+    builder.Services.AddScoped<IHttpResponseConverter, DebugHttpResponseConverter>();
+    Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+}
+else
+{
+    builder.Services.AddScoped<IHttpResponseConverter, ProductionHttpResponseConverter>();
+    Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+    Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+    Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+    Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+    Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+    Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+}
 
 //Validators
 builder.Services.AddScoped<IAudioFileValidator, AudioFileValidator>();
@@ -102,23 +121,19 @@ builder.Services.AddAuthentication(options =>
 
     options.Events = new JwtBearerEvents
     {
-        OnAuthenticationFailed = context =>
+        OnChallenge = async ctx =>
         {
-            if (context.Exception is SecurityTokenExpiredException)
-            {
-                // Create the invalid session response
-                var response = new ApiResponse<object>(null, MessageRepository.GetMessage(MessageKey.Error_Unauthorized).UserMessage);
-                    
-                var jsonResponse = JsonSerializer.Serialize(response);
+            // suppress the default 401 handler
+            ctx.HandleResponse();
 
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                context.Response.ContentType = "application/json";
+            ctx.Response.StatusCode  = StatusCodes.Status401Unauthorized;
+            ctx.Response.ContentType = "application/json";
 
+            var payload = new ApiResponse<object>(
+                null,
+                MessageRepository.GetMessage(MessageKey.Error_Unauthorized).UserMessage);
 
-                return context.Response.WriteAsync(jsonResponse);
-            }
-
-            return Task.CompletedTask;
+            await ctx.Response.WriteAsync(JsonSerializer.Serialize(payload));
         }
     };
 });
@@ -128,11 +143,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// BIND TO ALL NETWORK INTERFACES ON PORT 80
+builder.WebHost.UseUrls("http://0.0.0.0:80");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -141,7 +160,13 @@ app.UseRouting();
 
 app.UseCors("AllowFrontend");
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection(); // only in local dev
+    Console.WriteLine("UseHttpsRedirection is ENABLED");
+    Console.WriteLine("UseHttpsRedirection is ENABLED");
+    Console.WriteLine("UseHttpsRedirection is ENABLED");
+}
 
 app.UseAuthentication();
 app.UseAuthorization();

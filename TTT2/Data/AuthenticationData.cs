@@ -23,8 +23,10 @@ namespace TTT2.Data
 
                 return rowsAffected > 0 ? DataResult<User>.Success(user) : DataResult<User>.Error();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("ERROR MESSAGE ^^^^^^^^^^");
                 return DataResult<User>.Error();
             }
         }
