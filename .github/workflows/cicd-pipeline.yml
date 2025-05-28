@@ -88,7 +88,7 @@ jobs:
         id: vars
         run: |
           echo "IMAGE_NAME_LC=ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-          echo "Using image name: $IMAGE_NAME_LC"
+          echo "image_name=${IMAGE_NAME_LC}" >> $GITHUB_OUTPUT
             
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -109,8 +109,8 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ${{ env.IMAGE_NAME_LC }}:${{ env.IMAGE_TAG }}
-            ${{ github.ref == 'refs/heads/main' && env.IMAGE_NAME_LC }}:latest
+            ${{ env.IMAGE_NAME_LC }}:${{ github.sha }}
+            ${{ github.ref == 'refs/heads/main' && format('{0}:latest', env.IMAGE_NAME_LC) || '' }}
 
   load-test:
     needs: docker-build
