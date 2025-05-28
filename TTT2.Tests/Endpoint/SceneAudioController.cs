@@ -12,6 +12,7 @@ using TTT2.Tests.Factories;
 
 namespace TTT2.Tests.Endpoint;
 
+[Trait("Category", "Endpoint")]
 public class SceneAudioController(CustomWebApplicationFactory factory) : IntegrationTestBase(factory)
 {
     private async Task<Guid> CreateSceneAsync(string sceneName)

@@ -10,6 +10,7 @@ using TTT2.Services.Helpers;
 
 namespace TTT2.Tests.Unit.Services.Helpers;
 
+[Trait("Category", "Unit")]
 public class AuthenticationServiceHelperTests
 {
     private readonly Mock<IAuthenticationData> _authDataMock;

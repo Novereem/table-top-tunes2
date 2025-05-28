@@ -7,6 +7,7 @@ using TTT2.Services.Common.Authentication;
 
 namespace TTT2.Tests.Unit.Services.Common.Authentication;
 
+[Trait("Category", "Unit")]
 public class UserClaimsServiceTests
 {
     private readonly IUserClaimsService _userClaimsService = new UserClaimsService();

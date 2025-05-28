@@ -14,6 +14,7 @@ using TTT2.Services;
 
 namespace TTT2.Tests.Unit.Services;
 
+[Trait("Category", "Unit")]
 public class SceneServiceTests
 {
     private readonly Mock<ISceneServiceHelper> _helperMock;

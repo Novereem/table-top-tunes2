@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Http;
 using TTT2.Services.Helpers.FileValidation;
 
-namespace TTT2.Tests.Unit.Services.Helpers;
+namespace TTT2.Tests.Unit.Services.Helpers.FileValidation;
 
+[Trait("Category", "Unit")]
 public class FileSafetyValidatorTests
 {
     private readonly FileSafetyValidator _validator = new();

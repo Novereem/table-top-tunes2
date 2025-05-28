@@ -7,6 +7,7 @@ using Moq;
 
 namespace TTT2.Tests.Unit.Services.Helpers.Shared;
 
+[Trait("Category", "Unit")]
 public class SceneValidationServiceTests
 {
     private readonly Mock<ISceneData> _sceneDataMock;

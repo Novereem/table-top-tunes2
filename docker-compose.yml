@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ttt-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: tttdb
+      MYSQL_USER:     tttuser
+      MYSQL_PASSWORD: tttpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d:ro
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ttt-backend
+    depends_on:
+      - mysql
+    env_file:
+      - .env.backend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: "server=mysql;port=3306;database=tttdb;user=tttuser;password=tttpassword;"
+    ports:
+      - "8080:80"
+    volumes: []
+
+volumes:
+  dbdata:

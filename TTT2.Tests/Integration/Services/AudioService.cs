@@ -51,7 +51,7 @@ public class FakeAuthenticationService : IAuthenticationService
             Email = "test@example.com",
             PasswordHash = "fakehash",
             UsedStorageBytes = 0,
-            MaxStorageBytes = 10 * 1024 * 1024, // e.g., 10 MB
+            MaxStorageBytes = 10 * 1024 * 1024,
             CreatedAt = DateTime.UtcNow
         };
         return Task.FromResult(ServiceResult<User>.SuccessResult(user));
@@ -135,8 +135,9 @@ public class FakeAudioServiceHelper : IAudioServiceHelper
 
 // Integration tests for AudioService
 
-namespace TTT2.IntegrationTests
+namespace TTT2.Tests.IntegrationTests
 {
+    [Trait("Category", "Integration")]
     public class AudioServiceIntegrationTests
     {
         private readonly IAudioServiceHelper _audioHelper = new FakeAudioServiceHelper();

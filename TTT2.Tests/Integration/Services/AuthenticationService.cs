@@ -7,7 +7,7 @@ using Shared.Models.Common;
 using Shared.Models.DTOs.Authentication;
 using TTT2.Services;
 
-// Fake helper for AuthenticationService
+[Trait("Category", "Integration")]
 public class FakeAuthenticationServiceHelper : IAuthenticationServiceHelper
 {
     public Task<ServiceResult<object>> ValidateRegistrationAsync(RegisterDTO registerDTO)
@@ -97,7 +97,7 @@ public class FakeUserClaimsServiceAuthenticationService : IUserClaimsService
     }
 }
 
-namespace TTT2.IntegrationTests
+namespace TTT2.Tests.IntegrationTests
 {
     public class AuthenticationServiceIntegrationTests
     {

@@ -12,6 +12,7 @@ using TTT2.Services;
 
 namespace TTT2.Tests.Unit.Services;
 
+[Trait("Category", "Unit")]
 public class AuthenticationServiceTests
 {
     private readonly Mock<IAuthenticationServiceHelper> _authHelperMock;

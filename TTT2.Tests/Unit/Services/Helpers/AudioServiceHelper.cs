@@ -12,7 +12,7 @@ using TTT2.Services.Helpers;
 
 namespace TTT2.Tests.Unit.Services.Helpers;
 
-
+[Trait("Category", "Unit")]
 public class AudioServiceHelperTests : IDisposable
 {
     private readonly Mock<IAudioData> _audioDataMock;
