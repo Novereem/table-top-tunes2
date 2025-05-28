@@ -170,5 +170,4 @@ jobs:
       - name: Run k6 smoke test
         uses: grafana/run-k6-action@v1
         with:
-          script: k6/smoke.js
-          summary: true
+          path: k6/smoke.js
