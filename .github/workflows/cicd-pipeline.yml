@@ -11,12 +11,6 @@ on:
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}
   IMAGE_TAG: ${{ github.sha }}
-  DB_CONNECTION_STRING: >-
-    server=127.0.0.1;
-    port=3306;
-    database=${{ secrets.DB_NAME }};
-    user=${{ secrets.DB_USER }};
-    password=${{ secrets.DB_PASSWORD }};
   
 jobs:
   tests:
@@ -80,6 +74,9 @@ jobs:
       packages: write
     needs: tests
     runs-on: ubuntu-latest
+
+    outputs:
+      image_name: ${{ steps.vars.outputs.image_name }}
     
     steps:
       - uses: actions/checkout@v3
@@ -117,6 +114,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME_LC: ${{ needs.docker-build.outputs.image_name }}
+      DB_CONNECTION_STRING: >-
+        server=127.0.0.1;
+        port=3306;
+        database=${{ secrets.DB_NAME }};
+        user=${{ secrets.DB_USER }};
+        password=${{ secrets.DB_PASSWORD }};
       
     services:
       mysql:
