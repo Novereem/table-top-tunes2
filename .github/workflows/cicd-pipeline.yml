@@ -83,8 +83,9 @@ jobs:
       - name: Set lowercase IMAGE_NAME
         id: vars
         run: |
-          echo "IMAGE_NAME_LC=ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-          echo "image_name=${IMAGE_NAME_LC}" >> $GITHUB_OUTPUT
+          IMAGE_NAME_LC="ghcr.io/${GITHUB_REPOSITORY,,}"
+          echo "IMAGE_NAME_LC=$IMAGE_NAME_LC" >> $GITHUB_ENV
+          echo "image_name=$IMAGE_NAME_LC" >> $GITHUB_OUTPUT
             
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -137,10 +138,14 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
-
+  
       - name: Export IMAGE_NAME_LC
-        run: echo "IMAGE_NAME_LC=${{ needs.docker-build.outputs.image_name }}" >> $GITHUB_ENV
-            
+        run: |
+          echo "IMAGE_NAME_LC=${{ needs.docker-build.outputs.image_name }}" >> $GITHUB_ENV
+  
+      - name: Debug
+        run: echo "IMAGE_NAME_LC=$IMAGE_NAME_LC, SHA=$GITHUB_SHA"
+  
       - name: Pull backend image
         run: docker pull $IMAGE_NAME_LC:$GITHUB_SHA
 
