@@ -142,15 +142,15 @@ jobs:
         run: echo "IMAGE_NAME_LC=${{ needs.docker-build.outputs.image_name }}" >> $GITHUB_ENV
             
       - name: Pull backend image
-        run: docker pull ${{ env.IMAGE_NAME_LC }}:${{ github.sha }}
+        run: docker pull $IMAGE_NAME_LC:$GITHUB_SHA
 
       - name: Start backend container
         run: |
           docker run -d --name ttt-backend \
             --network host \
-            -e ConnectionStrings__Default="${{ env.DB_CONNECTION_STRING }}" \
+            -e ConnectionStrings__Default="$DB_CONNECTION_STRING" \
             -p 8080:80 \
-            ${{ env.IMAGE_NAME_LC }}:${{ github.sha }}
+            $IMAGE_NAME_LC:$GITHUB_SHA
 
       - name: Wait for API to be healthy
         run: |
