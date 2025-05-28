@@ -153,10 +153,10 @@ jobs:
           done
       
       - name: Setup k6
-        uses: grafana/setup-k6-action@v0.4.0          :contentReference[oaicite:0]{index=0}
+        uses: grafana/setup-k6-action@v1
 
       - name: Run k6 smoke test
-        uses: grafana/run-k6-action@v0.3.0            :contentReference[oaicite:1]{index=1}
+        uses: grafana/run-k6-action@v1
         with:
           script: k6/smoke.js
           summary: true
