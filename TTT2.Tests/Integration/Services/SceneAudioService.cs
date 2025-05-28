@@ -10,6 +10,7 @@ using Shared.Models.DTOs.AudioFiles;
 using Shared.Models.DTOs.SceneAudios;
 using TTT2.Services;
 
+
 public class FakeUserClaimsService : IUserClaimsService
 {
     public ServiceResult<Guid> GetUserIdFromClaims(ClaimsPrincipal user)
@@ -91,8 +92,9 @@ public class FakeSceneValidationService : ISceneValidationService
     }
 }
 
-namespace TTT2.IntegrationTests
+namespace TTT2.Tests.IntegrationTests
 {
+    [Trait("Category", "Integration")]
     public class SceneAudioServiceIntegrationTests
     {
         private readonly IAudioService _audioService = new FakeAudioService();

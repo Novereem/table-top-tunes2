@@ -9,6 +9,7 @@ using TTT2.Tests.Factories;
 
 namespace TTT2.Tests.Endpoint;
 
+[Trait("Category", "Endpoint")]
 public class SceneController(CustomWebApplicationFactory factory) : IntegrationTestBase(factory)
 {
     [Fact]

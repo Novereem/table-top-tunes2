@@ -9,6 +9,8 @@ using Shared.Models.Common;
 using Shared.Models.DTOs.SceneAudios;
 using Shared.Models.DTOs.Scenes;
 using TTT2.Services;
+
+[Trait("Category", "Integration")]
 public class FakeSceneServiceHelper : ISceneServiceHelper
 {
     public ServiceResult<object> ValidateSceneCreate(SceneCreateDTO sceneDTO)
@@ -115,7 +117,7 @@ public class FakeSceneValidationServiceSceneService : ISceneValidationService
 
 // Integration tests for SceneService
 
-namespace TTT2.IntegrationTests
+namespace TTT2.Tests.IntegrationTests
 {
     public class SceneServiceIntegrationTests
     {

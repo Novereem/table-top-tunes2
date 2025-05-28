@@ -6,8 +6,9 @@ using Shared.Models.DTOs.AudioFiles;
 using Shared.Statics;
 using TTT2.Services.Helpers.FileValidation;
 
-namespace TTT2.Tests.Unit.Services.Helpers;
+namespace TTT2.Tests.Unit.Services.Helpers.FileValidation;
 
+[Trait("Category", "Unit")]
 public class AudioFileValidatorTests
 {
     private readonly AudioFileValidator _validator = new AudioFileValidator();

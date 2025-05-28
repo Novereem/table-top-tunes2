@@ -8,6 +8,7 @@ using TTT2.Tests.Factories;
 
 namespace TTT2.Tests.Endpoint;
 
+[Trait("Category", "Endpoint")]
 public class AudioController(CustomWebApplicationFactory factory) : IntegrationTestBase(factory)
 {
     [Fact]

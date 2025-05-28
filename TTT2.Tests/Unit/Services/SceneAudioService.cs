@@ -13,6 +13,7 @@ using TTT2.Services;
 
 namespace TTT2.Tests.Unit.Services;
 
+[Trait("Category", "Unit")]
 public class SceneAudioServiceTests
 {
     private readonly Mock<IUserClaimsService> _userClaimsServiceMock;

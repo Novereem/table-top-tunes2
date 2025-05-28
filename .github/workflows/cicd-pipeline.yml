@@ -55,8 +55,14 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
-      - name: Run tests
-        run: dotnet test --configuration Release --no-build --framework net8.0 --verbosity normal
+      - name: Run unit tests
+        run: dotnet test --configuration Release --no-build --filter "Category=Unit" --verbosity normal
+
+      - name: Run integration tests
+        run: dotnet test --configuration Release --no-build --filter "Category=Integration" --verbosity normal
+            
+      - name: Run endpoint tests
+        run: dotnet test --configuration Release --no-build --filter "Category=Endpoint" --verbosity normal
 
       - name: Start ASP.NET Core app
         run: |
