@@ -17,7 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       USE_IN_MEMORY: "true"
-      DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
       JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
       JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
       JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
@@ -113,7 +112,6 @@ jobs:
     needs: docker-build
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME_LC: ${{ needs.docker-build.outputs.image_name }}
       DB_CONNECTION_STRING: >-
         server=127.0.0.1;
         port=3306;
@@ -140,6 +138,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Export IMAGE_NAME_LC
+        run: echo "IMAGE_NAME_LC=${{ needs.docker-build.outputs.image_name }}" >> $GITHUB_ENV
+            
       - name: Pull backend image
         run: docker pull ${{ env.IMAGE_NAME_LC }}:${{ github.sha }}
 
