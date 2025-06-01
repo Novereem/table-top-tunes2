@@ -29,7 +29,8 @@ DotNetEnv.Env.Load();
 //Common
 builder.Services.AddScoped<IPasswordHashingService, PasswordHashingService>();
 builder.Services.AddSingleton<IUserClaimsService, UserClaimsService>();
-
+builder.Services.AddHealthChecks();
+    
 //Standard Services
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ISceneService, SceneService>();
