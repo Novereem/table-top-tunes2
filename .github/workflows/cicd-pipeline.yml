@@ -26,12 +26,6 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v3
 
-      - name: Dump JWT secrets
-        run: |
-          echo "JWT_SECRET_KEY is '$JWT_SECRET_KEY'"
-          echo "JWT_ISSUER    is '$JWT_ISSUER'"
-          echo "JWT_AUDIENCE  is '$JWT_AUDIENCE'"
-
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -155,19 +149,25 @@ jobs:
       - name: Pull backend image
         run: docker pull $IMAGE_NAME_LC:$GITHUB_SHA
 
-      - name: Start backend container
+      - name: Start backend container in debug mode
         run: |
-          docker run -d --name ttt-backend \
+          docker run -d --name ttt-backend-debug \
             --network host \
             -e ConnectionStrings__Default="$DB_CONNECTION_STRING" \
             -e JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" \
             -e JWT_ISSUER="${{ secrets.JWT_ISSUER }}" \
             -e JWT_AUDIENCE="${{ secrets.JWT_AUDIENCE }}" \
             -p 8080:80 \
-            $IMAGE_NAME_LC:$GITHUB_SHA
-            
-      - name: List Running Containers
-        run: docker ps -a
+            --entrypoint /bin/bash \
+            $IMAGE_NAME_LC:$GITHUB_SHA \
+            -c "sleep 300"
+
+      - name: Show container’s environment
+        run: |
+          echo "===== ENV inside ttt-backend-debug ====="
+          docker exec ttt-backend-debug env | sort
+            - name: List Running Containers
+              run: docker ps -a
       
       - name: Show Backend Logs
         run: |
