@@ -25,7 +25,14 @@ jobs:
     steps:
       - name: Check out the code
         uses: actions/checkout@v3
-    
+        
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-
+        
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -81,6 +88,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Build & push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          cache-from: type=gha
+          cache-to:   type=gha,mode=max
+          tags: |
+            ${{ env.IMAGE_NAME_LC }}:${{ github.sha }}
+          
       - name: Set lowercase IMAGE_NAME
         id: vars
         run: |
@@ -172,6 +190,7 @@ jobs:
       - name: Start backend container
         run: |
           docker run -d --name ttt-backend \
+            --network ${{ job.services.mysql.network }}
             -e ConnectionStrings__Default="$DB_CONNECTION_STRING" \
             -e JWT_SECRET_KEY -e JWT_ISSUER -e JWT_AUDIENCE \
             -p 8080:80 \
