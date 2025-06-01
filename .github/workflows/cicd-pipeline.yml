@@ -246,7 +246,7 @@ jobs:
       - name: Link to Railway project & service
         run: |
           railway link \
-            --project=${{ env.PROJECT_ID }} \
+            --project-id=${{ env.PROJECT_ID }} \
             --service=${{ env.SVC_ID }}
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
