@@ -221,37 +221,41 @@ jobs:
           path: k6/smoke.js
           
   deploy-staging:
-    environment: Deployment
+    name: Deploy to Railway (Staging)
     needs: load-test
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     env:
       SVC_ID: ${{ secrets.RAILWAY_SERVICE_ID_STAGING }}
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16.x"
+      - name: Download Railway CLI v3.14.0
+        run: |
+          curl -L "https://github.com/railwayapp/cli/releases/download/v3.14.0/railway-v3.14.0-linux-x64.tar.gz" \
+            | tar xz
+          sudo mv railway /usr/local/bin/railway
 
-      - name: Install Railway CLI v3.14.0
-        run: npm install -g @railway/cli@3.14.0
+      - name: Verify Railway version
+        run: |
+          railway --version
+          # Should output: v3.14.0
 
       - name: Link to Railway project & service
         run: |
           railway link \
-            --project-id=${{ env.PROJECT_ID }} \
-            --service=${{ env.SVC_ID }}
+            --project-id="${{ env.PROJECT_ID }}" \
+            --service="${{ env.SVC_ID }}"
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Deploy to Railway (Staging)
+        id: railway-deploy
         run: |
           railway up --detach
         env:
@@ -267,7 +271,6 @@ jobs:
           echo "url=$URL" >> $GITHUB_OUTPUT
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
       - name: Wait for /health to return 200
         run: |
           URL=$(railway service info \
@@ -286,7 +289,6 @@ jobs:
           echo "ERROR: Staging never became healthy" && exit 1
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
       - name: Set up k6
         uses: grafana/setup-k6-action@v1
 
