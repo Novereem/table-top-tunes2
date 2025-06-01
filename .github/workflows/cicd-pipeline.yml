@@ -157,25 +157,24 @@ jobs:
       - name: Pull backend image
         run: docker pull $IMAGE_NAME_LC:$GITHUB_SHA
 
-      - name: Start backend container in debug mode
+      - name: Start backend container
         run: |
-          docker run -d --name ttt-backend-debug \
+          docker run -d --name ttt-backend \
             --network host \
             -e ConnectionStrings__Default="$DB_CONNECTION_STRING" \
-            -e JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" \
-            -e JWT_ISSUER="${{ secrets.JWT_ISSUER }}" \
-            -e JWT_AUDIENCE="${{ secrets.JWT_AUDIENCE }}" \
+            -e JWT_SECRET_KEY \
+            -e JWT_ISSUER \
+            -e JWT_AUDIENCE \
             -p 8080:80 \
-            --entrypoint /bin/bash \
-            $IMAGE_NAME_LC:$GITHUB_SHA \
-            -c "sleep 300"
+            $IMAGE_NAME_LC:$GITHUB_SHA
 
       - name: Show container’s environment
         run: |
-          echo "===== ENV inside ttt-backend-debug ====="
-          docker exec ttt-backend-debug env | sort
-            - name: List Running Containers
-              run: docker ps -a
+          echo "===== ENV inside ttt-backend ====="
+          docker exec ttt-backend env | sort
+      
+      - name: List running containers
+        run: docker ps -a
       
       - name: Show Backend Logs
         run: |
