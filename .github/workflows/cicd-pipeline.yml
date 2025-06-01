@@ -68,6 +68,7 @@ jobs:
         run: dotnet test --configuration Release --no-build --filter "Category=Endpoint" --verbosity normal
   
   docker-build:
+    environment: Deployment
     permissions:
       contents: read
       packages: write
@@ -110,6 +111,7 @@ jobs:
             ${{ github.ref == 'refs/heads/main' && format('{0}:latest', env.IMAGE_NAME_LC) || '' }}
 
   load-test:
+    environment: Deployment
     needs: docker-build
     runs-on: ubuntu-latest
     env:
