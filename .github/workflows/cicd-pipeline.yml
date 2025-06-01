@@ -222,41 +222,35 @@ jobs:
           
   deploy-staging:
     if: github.ref == 'refs/heads/main'
-    needs: docker-build
     runs-on: ubuntu-latest
-
+    container: ghcr.io/railwayapp/cli:latest
+    env:
+      SVC_ID: ${{ secrets.RAILWAY_SERVICE_ID_STAGING }}
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     steps:
-      - name: Checkout (needed only because k6 script lives in repo)
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Deploy latest image to Railway (Staging)
+      - name: Build and push Docker image
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/app:${{ github.sha }} .
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+          docker push ghcr.io/${{ github.repository_owner }}/app:${{ github.sha }}
+
+      - name: Deploy to Railway (Staging)
         id: railway-deploy
-        uses: railwayapp/railway-action@v2
-        with:
-          railwayToken: ${{ secrets.RAILWAY_TOKEN }}
-          projectId: ${{ secrets.RAILWAY_PROJECT_ID }}
-          serviceId: ${{ secrets.RAILWAY_SERVICE_ID_STAGING }}
-          environment: "Staging"
+        run: |
+          railway up --service=${{ env.SVC_ID }} --detach
 
-      - name: Install Railway CLI
-        run: curl -sSL https://railway.app/install.sh | sh
-
-      - name: Get Staging URL
-        id: stageurl
+      - name: Wait for /health to return 200
         run: |
           URL=$(railway service info \
-                --service ${{ secrets.RAILWAY_SERVICE_ID_STAGING }} \
+                --service ${{ env.SVC_ID }} \
                 --project ${{ secrets.RAILWAY_PROJECT_ID }} \
                 --environment Staging \
                 --json | jq -r '.domains[0]')
-          echo "url=$URL" >> $GITHUB_OUTPUT
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-      - name: Verify /health is 200
-        run: |
           for i in {1..30}; do
-            STATUS=$(curl -s -o /dev/null -w '%{http_code}' "https://${{ steps.stageurl.outputs.url }}/health")
+            STATUS=$(curl -s -o /dev/null -w '%{http_code}' "https://$URL/health")
             [ "$STATUS" = "200" ] && exit 0
             echo "waiting for /health… ($i/30)"; sleep 3
           done
@@ -271,3 +265,4 @@ jobs:
           path: k6/smoke.js
           args: |
             -e BASE_URL="https://${{ steps.stageurl.outputs.url }}/"
+  
