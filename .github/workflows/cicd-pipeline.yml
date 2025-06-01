@@ -26,6 +26,12 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v3
 
+      - name: Dump JWT secrets
+        run: |
+          echo "JWT_SECRET_KEY is '$JWT_SECRET_KEY'"
+          echo "JWT_ISSUER    is '$JWT_ISSUER'"
+          echo "JWT_AUDIENCE  is '$JWT_AUDIENCE'"
+
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
