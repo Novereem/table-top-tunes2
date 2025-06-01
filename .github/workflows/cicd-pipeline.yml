@@ -179,7 +179,7 @@ jobs:
       - name: Start backend container
         run: |
           docker run -d --name ttt-backend \
-            --network ${{ job.services.mysql.network }}
+            --network ${{ job.services.mysql.network }} \
             -e ConnectionStrings__Default="$DB_CONNECTION_STRING" \
             -e JWT_SECRET_KEY -e JWT_ISSUER -e JWT_AUDIENCE \
             -p 8080:80 \
