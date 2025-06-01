@@ -154,6 +154,9 @@ jobs:
           docker run -d --name ttt-backend \
             --network host \
             -e ConnectionStrings__Default="$DB_CONNECTION_STRING" \
+            -e JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" \
+            -e JWT_ISSUER="${{ secrets.JWT_ISSUER }}" \
+            -e JWT_AUDIENCE="${{ secrets.JWT_AUDIENCE }}" \
             -p 8080:80 \
             $IMAGE_NAME_LC:$GITHUB_SHA
             
