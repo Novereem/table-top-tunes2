@@ -224,6 +224,7 @@ jobs:
     needs: load-test
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment: Deployment
 
     steps:
       - uses: actions/checkout@v3
