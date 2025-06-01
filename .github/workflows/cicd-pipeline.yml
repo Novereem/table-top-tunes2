@@ -157,14 +157,24 @@ jobs:
       - name: Pull backend image
         run: docker pull $IMAGE_NAME_LC:$GITHUB_SHA
 
+      - name: Wait for MySQL to be healthy
+        run: |
+          for i in {1..30}; do
+            if docker inspect --format '{{json .State.Health.Status}}' $(docker ps -q --filter "ancestor=mysql:8.0") | grep -q healthy; then
+              echo "MySQL is healthy!"
+              exit 0
+            fi
+            echo "waiting for MySQL… ($i/30)"
+            sleep 2
+          done
+          echo "MySQL did not become healthy" && exit 1
+
       - name: Start backend container
         run: |
           docker run -d --name ttt-backend \
             --network host \
             -e ConnectionStrings__Default="$DB_CONNECTION_STRING" \
-            -e JWT_SECRET_KEY \
-            -e JWT_ISSUER \
-            -e JWT_AUDIENCE \
+            -e JWT_SECRET_KEY -e JWT_ISSUER -e JWT_AUDIENCE \
             -p 8080:80 \
             $IMAGE_NAME_LC:$GITHUB_SHA
 
@@ -185,19 +195,6 @@ jobs:
       - name: Show MySQL Logs
         run: |
           docker logs --tail 50 mysql || echo "No logs for mysql"
-
-      - name: Wait for API to be healthy
-        run: |
-          for i in {1..30}; do
-            if curl -sf http://localhost:8080/api/health; then
-              echo "API is healthy!"
-              exit 0
-            fi
-            echo "waiting for API… ($i/30)" 
-            sleep 2
-          done
-          echo "API did not become healthy in 60 seconds"
-          exit 1
       
       - name: Setup k6
         uses: grafana/setup-k6-action@v1
