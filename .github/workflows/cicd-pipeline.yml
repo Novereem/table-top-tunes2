@@ -220,69 +220,36 @@ jobs:
         with:
           path: k6/smoke.js
           
-  deploy-staging:
-    environment: Deployment
-    name: Deploy to Railway (Staging)
+  deploy-railway:
     needs: load-test
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-
-    container: ghcr.io/railwayapp/cli:latest
-
-    env:
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
-      RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID_STAGING }}
-
+    environment: Production
+    
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Deploy to Railway (Staging)
-        run: railway up --detach
-
-      - name: Get Staging URL
-        id: stageurl
-        run: |
-          URL=$(railway service info \
-                --service="${{ env.SVC_ID }}" \
-                --environment Staging \
-                --json \
-              | jq -r '.domains[0]')
-          echo "url=$URL" >> $GITHUB_OUTPUT
-
-      - name: Wait for /health to return 200
-        run: |
-          URL=$(railway service info \
-                --service="${{ env.SVC_ID }}" \
-                --environment Staging \
-                --json \
-              | jq -r '.domains[0]')
-
-          for i in {1..30}; do
-            STATUS=$(curl -s -o /dev/null -w '%{http_code}' "https://$URL/health")
-            if [ "$STATUS" = "200" ]; then
-              echo "Staging is healthy!"
-              exit 0
-            fi
-            echo "waiting for /health… ($i/30)"
-            sleep 3
-          done
-
-          echo "ERROR: Staging never became healthy" && exit 1
-
-        env:
-          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
-
-      - name: Set up k6
-        uses: grafana/setup-k6-action@v1
-
-      - name: Run k6 smoke test against Staging
-        uses: grafana/run-k6-action@v1
+      - name: Set up Node.js (Railway CLI runtime)
+        uses: actions/setup-node@v4
         with:
-          path: k6/smoke.js
-          args: |
-            -e BASE_URL="https://${{ steps.stageurl.outputs.url }}/"
+          node-version: '20'
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+      
+      - name: Link project / service
         env:
-          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          RAILWAY_ENVIRONMENT_ID: ${{ secrets.RAILWAY_ENVIRONMENT_ID }}
+          RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
+        run: |
+          # create .railway directory so the CLI knows where to point
+          railway link --yes --project $RAILWAY_PROJECT_ID --environment $RAILWAY_ENVIRONMENT_ID
+          railway service $RAILWAY_SERVICE_ID
+      
+      - name: Redeploy image
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: railway redeploy --yes
   
