@@ -230,19 +230,16 @@ jobs:
     container: ghcr.io/railwayapp/cli:latest
 
     env:
-      SVC_ID: ${{ secrets.RAILWAY_SERVICE_ID_STAGING }}
-      RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+      RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID_STAGING }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Deploy to Railway (Staging)
-        id: railway-deploy
-        run: |
-          # Because RAILWAY_API_TOKEN is set, v3.18+ CLI will discover
-          # project from SVC_ID automatically.
-          railway up --service="${{ env.SVC_ID }}" --detach
+        run: railway up --detach
 
       - name: Get Staging URL
         id: stageurl
