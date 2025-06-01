@@ -219,18 +219,55 @@ jobs:
         uses: grafana/run-k6-action@v1
         with:
           path: k6/smoke.js
+          
   deploy-staging:
     if: github.ref == 'refs/heads/main'
     needs: docker-build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout (needed only because k6 script lives in repo)
         uses: actions/checkout@v3
 
-      - name: Deploy latest image to Railway
-        uses: railwayapp/railway-action@v1
+      - name: Deploy latest image to Railway (Staging)
+        id: railway-deploy
+        uses: railwayapp/railway-action@v2
         with:
           railwayToken: ${{ secrets.RAILWAY_TOKEN }}
           projectId: ${{ secrets.RAILWAY_PROJECT_ID }}
           serviceId: ${{ secrets.RAILWAY_SERVICE_ID_STAGING }}
+          environment: "Staging"
+
+      - name: Install Railway CLI
+        run: curl -sSL https://railway.app/install.sh | sh
+
+      - name: Get Staging URL
+        id: stageurl
+        run: |
+          URL=$(railway service info \
+                --service ${{ secrets.RAILWAY_SERVICE_ID_STAGING }} \
+                --project ${{ secrets.RAILWAY_PROJECT_ID }} \
+                --environment Staging \
+                --json | jq -r '.domains[0]')
+          echo "url=$URL" >> $GITHUB_OUTPUT
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Verify /health is 200
+        run: |
+          for i in {1..30}; do
+            STATUS=$(curl -s -o /dev/null -w '%{http_code}' "https://${{ steps.stageurl.outputs.url }}/health")
+            [ "$STATUS" = "200" ] && exit 0
+            echo "waiting for /health… ($i/30)"; sleep 3
+          done
+          echo "Staging never became healthy" && exit 1
+
+      - name: Set up k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Run k6 smoke test against Staging
+        uses: grafana/run-k6-action@v1
+        with:
+          path: k6/smoke.js
+          args: |
+            -e BASE_URL="https://${{ steps.stageurl.outputs.url }}/"
