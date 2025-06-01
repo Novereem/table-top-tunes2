@@ -221,6 +221,7 @@ jobs:
           path: k6/smoke.js
           
   deploy-staging:
+    environment: Deployment
     name: Deploy to Railway (Staging)
     needs: load-test
     if: github.ref == 'refs/heads/main'
