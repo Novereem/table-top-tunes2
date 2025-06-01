@@ -222,7 +222,6 @@ jobs:
           
   deploy-staging:
     needs: load-test
-    environment: Deployment
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     container: ghcr.io/railwayapp/cli:latest
@@ -236,33 +235,42 @@ jobs:
       - name: Deploy to Railway (Staging)
         id: railway-deploy
         run: |
-          railway up --service=${{ env.SVC_ID }} --detach
+          railway up \
+            --project=${{ secrets.RAILWAY_PROJECT_ID }} \
+            --service=${{ env.SVC_ID }} \
+            --detach
 
       - name: Get Staging URL
         id: stageurl
         run: |
           URL=$(railway service info \
-                --service ${{ env.SVC_ID }} \
-                --project ${{ secrets.RAILWAY_PROJECT_ID }} \
+                --project=${{ secrets.RAILWAY_PROJECT_ID }} \
+                --service=${{ env.SVC_ID }} \
                 --environment Staging \
-                --json | jq -r '.domains[0]')
+                --json \
+              | jq -r '.domains[0]')
           echo "url=$URL" >> $GITHUB_OUTPUT
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          
+
       - name: Wait for /health to return 200
         run: |
           URL=$(railway service info \
-                --service ${{ env.SVC_ID }} \
-                --project ${{ secrets.RAILWAY_PROJECT_ID }} \
+                --project=${{ secrets.RAILWAY_PROJECT_ID }} \
+                --service=${{ env.SVC_ID }} \
                 --environment Staging \
-                --json | jq -r '.domains[0]')
+                --json \
+              | jq -r '.domains[0]')
           for i in {1..30}; do
             STATUS=$(curl -s -o /dev/null -w '%{http_code}' "https://$URL/health")
-            [ "$STATUS" = "200" ] && exit 0
-            echo "waiting for /health… ($i/30)"; sleep 3
+            if [ "$STATUS" = "200" ]; then
+              echo "Staging is healthy!"
+              exit 0
+            fi
+            echo "waiting for /health… ($i/30)"
+            sleep 3
           done
-          echo "Staging never became healthy" && exit 1
+          echo "ERROR: Staging never became healthy" && exit 1
 
       - name: Set up k6
         uses: grafana/setup-k6-action@v1
@@ -273,4 +281,3 @@ jobs:
           path: k6/smoke.js
           args: |
             -e BASE_URL="https://${{ steps.stageurl.outputs.url }}/"
-  
