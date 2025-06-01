@@ -7,7 +7,7 @@ export const options = {
 };
 
 export default function () {
-  const res = http.get('http://localhost:8080/api/health');
+  const res = http.get('http://localhost:8080/health');
   check(res, { 'status == 200': r => r.status === 200 });
   sleep(1);
 }

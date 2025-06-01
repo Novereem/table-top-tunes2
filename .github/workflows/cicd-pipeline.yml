@@ -188,7 +188,7 @@ jobs:
       - name: Wait for API to be healthy
         run: |
           for i in {1..30}; do
-            curl -sf http://localhost:8080/api/health && exit 0
+            curl -sf http://localhost:8080/health && exit 0
             echo "waiting for API… ($i/30)"; sleep 2
           done
           echo "API did not become healthy"; exit 1
