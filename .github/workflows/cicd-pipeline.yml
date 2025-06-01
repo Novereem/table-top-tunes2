@@ -226,38 +226,21 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
+    container: ghcr.io/railwayapp/cli:latest
+
     env:
       SVC_ID: ${{ secrets.RAILWAY_SERVICE_ID_STAGING }}
-      PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Download Railway CLI v3.14.0
-        run: |
-          curl -L "https://github.com/railwayapp/cli/releases/download/v3.14.0/railway-v3.14.0-linux-x64.tar.gz" \
-            | tar xz
-          sudo mv railway /usr/local/bin/railway
-
-      - name: Verify Railway version
-        run: |
-          railway --version
-          # Should output: v3.14.0
-
-      - name: Link to Railway project & service
-        run: |
-          railway link \
-            --project-id="${{ env.PROJECT_ID }}" \
-            --service="${{ env.SVC_ID }}"
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
       - name: Deploy to Railway (Staging)
         id: railway-deploy
         run: |
-          railway up --detach
+          # "up --service" is enough for v3.18.0+ to know your project from the SVC_ID.
+          railway up --service="${{ env.SVC_ID }}" --detach
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
@@ -265,18 +248,22 @@ jobs:
         id: stageurl
         run: |
           URL=$(railway service info \
+                --service="${{ env.SVC_ID }}" \
                 --environment Staging \
                 --json \
               | jq -r '.domains[0]')
           echo "url=$URL" >> $GITHUB_OUTPUT
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
       - name: Wait for /health to return 200
         run: |
           URL=$(railway service info \
+                --service="${{ env.SVC_ID }}" \
                 --environment Staging \
                 --json \
               | jq -r '.domains[0]')
+
           for i in {1..30}; do
             STATUS=$(curl -s -o /dev/null -w '%{http_code}' "https://$URL/health")
             if [ "$STATUS" = "200" ]; then
@@ -286,9 +273,11 @@ jobs:
             echo "waiting for /health… ($i/30)"
             sleep 3
           done
+
           echo "ERROR: Staging never became healthy" && exit 1
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
       - name: Set up k6
         uses: grafana/setup-k6-action@v1
 
