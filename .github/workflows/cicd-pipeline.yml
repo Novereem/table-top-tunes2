@@ -119,6 +119,11 @@ jobs:
         database=${{ secrets.DB_NAME }};
         user=${{ secrets.DB_USER }};
         password=${{ secrets.DB_PASSWORD }};
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+      JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
+      DEVELOPMENT: "false"
+      DISABLE_CLAMAV: "false"
       
     services:
       mysql:
@@ -128,6 +133,7 @@ jobs:
           MYSQL_DATABASE: ${{ secrets.DB_NAME }}
           MYSQL_USER: ${{ secrets.DB_USER }}
           MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          
         ports:
           - 3306:3306
         options: >-
