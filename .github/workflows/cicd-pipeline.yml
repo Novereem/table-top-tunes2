@@ -116,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DB_CONNECTION_STRING: >-
-        server=127.0.0.1;
+        server=mysql;
         port=3306;
         database=${{ secrets.DB_NAME }};
         user=${{ secrets.DB_USER }};
@@ -172,10 +172,9 @@ jobs:
       - name: Start backend container
         run: |
           docker run -d --name ttt-backend \
-            --network host \
             -e ConnectionStrings__Default="$DB_CONNECTION_STRING" \
             -e JWT_SECRET_KEY -e JWT_ISSUER -e JWT_AUDIENCE \
-            -p 8080:80 \
+            -p 8080:8080 \
             $IMAGE_NAME_LC:$GITHUB_SHA
 
       - name: Show container’s environment
@@ -192,9 +191,14 @@ jobs:
           sleep 5
           docker logs --tail 50 ttt-backend || echo "No logs (container may have exited)"
       
-      - name: Show MySQL Logs
+      - name: Show MySQL logs
         run: |
-          docker logs --tail 50 mysql || echo "No logs for mysql"
+          MID=$(docker ps -q --filter "ancestor=mysql:8.0")
+          if [ -n "$MID" ]; then
+            docker logs --tail 50 "$MID"
+          else
+            echo "MySQL container not found"
+          fi
       
       - name: Setup k6
         uses: grafana/setup-k6-action@v1
